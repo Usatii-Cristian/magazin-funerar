@@ -56,8 +56,10 @@ export default function ImageGallery({ images, name, children }) {
           Zoom
         </div>
 
-        {/* Overlay content (back link, badges, title) */}
-        {children}
+        {/* Overlay content (back link, badges, title) — stop propagation so clicks don't open lightbox */}
+        <div onClick={(e) => e.stopPropagation()} className="contents">
+          {children}
+        </div>
       </div>
 
       {/* Gallery thumbnails — shown inside product details section via prop */}

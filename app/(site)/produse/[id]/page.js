@@ -57,7 +57,7 @@ export default async function ProductPage({ params }) {
       {/* ── Hero image with lightbox ─────────────────────────── */}
       <ImageGallery images={product.images} name={product.name}>
         {/* Back link */}
-        <div className="absolute left-6 top-6" onClick={(e) => e.stopPropagation()}>
+        <div className="absolute left-6 top-6">
           <Link
             href="/produse"
             className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/25"
@@ -70,7 +70,7 @@ export default async function ProductPage({ params }) {
         </div>
 
         {/* Title area */}
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-10" onClick={(e) => e.stopPropagation()}>
+        <div className="absolute inset-x-0 bottom-0 px-6 pb-10">
           <div className="mx-auto max-w-6xl">
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
