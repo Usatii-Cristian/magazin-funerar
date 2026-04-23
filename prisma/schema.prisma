@@ -25,6 +25,7 @@ model Service {
 model Product {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
+  slug          String?  @unique
   category      String
   material      String
   price         Int
@@ -38,10 +39,12 @@ model Product {
 }
 
 model Message {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  phone     String
-  message   String
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  phone        String
+  message      String
+  read         Boolean  @default(false)
+  delivered    Boolean  @default(false)
+  telegramSent Boolean  @default(false)
+  createdAt    DateTime @default(now())
 }

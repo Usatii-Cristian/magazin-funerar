@@ -91,19 +91,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Google Maps */}
-      <section className="h-80 w-full">
-        <iframe
-          src="https://maps.google.com/maps?q=PrimNord+Granit&output=embed"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Locație PrimNord Granit"
-        />
-      </section>
     </>
   );
 }

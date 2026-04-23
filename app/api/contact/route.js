@@ -1,25 +1,61 @@
 import { NextResponse } from "next/server";
 
+const TELEGRAM_TOKEN =
+  process.env.TELEGRAM_BOT_TOKEN ||
+  "8559936198:AAEA_Y_iBuq1TF4HQHhdi1v9MAmAKr1CjPA";
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "-5141877015";
+
+async function sendTelegram(name, phone, message, date) {
+  const text =
+    `📬 <b>Mesaj nou de contact!</b>\n\n` +
+    `👤 <b>Nume:</b> ${name}\n` +
+    `📞 <b>Telefon:</b> ${phone}\n` +
+    `💬 <b>Mesaj:</b> ${message}\n` +
+    `🕐 <b>Data:</b> ${date}`;
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text,
+          parse_mode: "HTML",
+        }),
+      }
+    );
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
     const { name, phone, message } = body;
 
     if (!name || !phone || !message) {
-      return NextResponse.json(
-        { error: "Câmpuri lipsă" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Câmpuri lipsă" }, { status: 400 });
     }
 
-    // Save to database if connected
+    const date = new Date().toLocaleString("ro-RO", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    const telegramSent = await sendTelegram(name, phone, message, date);
+
     try {
       const { default: prisma } = await import("@/lib/prisma");
       await prisma.message.create({
-        data: { name, phone, message },
+        data: { name, phone, message, telegramSent },
       });
     } catch (dbError) {
-      // Database not connected — log and continue so the user sees success
       console.warn("DB not connected, message not persisted:", dbError.message);
     }
 

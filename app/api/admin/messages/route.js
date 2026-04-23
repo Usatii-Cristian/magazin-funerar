@@ -14,11 +14,10 @@ export async function GET() {
 
 export async function PATCH(request) {
   try {
-    const { id } = await request.json();
-    const message = await prisma.message.update({
-      where: { id },
-      data: { read: true },
-    });
+    const { id, action } = await request.json();
+    const data =
+      action === "deliver" ? { delivered: true } : { read: true };
+    const message = await prisma.message.update({ where: { id }, data });
     return NextResponse.json(message);
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });

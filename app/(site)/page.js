@@ -39,37 +39,95 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[90vh] flex-col items-center justify-center bg-stone-900 px-6 text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(160,120,72,0.12)_0%,_transparent_70%)]" />
-        <div className="relative z-10 max-w-2xl">
-          <p className="mb-6 text-xs font-medium uppercase tracking-[0.3em] text-gold-400">
+      <section className="relative flex min-h-[90vh] overflow-hidden bg-stone-950">
+        {/* Mobile background image */}
+        <div className="absolute inset-0 lg:hidden">
+          <Image
+            src="https://images.unsplash.com/photo-1572547030508-9c9c9d2140bf?w=1200&q=80"
+            alt="Monument granit"
+            fill
+            className="object-cover brightness-30"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-stone-950/70" />
+        </div>
+
+        {/* Left — text content */}
+        <div className="relative z-10 flex flex-1 flex-col justify-center px-8 py-20 lg:max-w-[52%] lg:px-16 lg:py-0 xl:px-24">
+          <p className="mb-5 text-xs font-medium uppercase tracking-[0.3em] text-gold-400">
             Servicii funerare complete
           </p>
-          <h1 className="mb-6 font-display text-4xl font-semibold leading-tight text-white sm:text-5xl md:text-6xl">
+          <h1 className="mb-6 font-display text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-5xl xl:text-6xl">
             Respect, Grijă și{" "}
             <span className="text-gold-400">Demnitate</span>{" "}
             în Momente Dificile
           </h1>
-          <p className="mb-10 text-base leading-relaxed text-stone-400 sm:text-lg">
+          <p className="mb-10 max-w-lg text-base leading-relaxed text-stone-400 sm:text-lg">
             Suntem alături de dumneavoastră în cele mai dificile clipe, oferind
             suport complet și îngrijire desăvârșită pentru cei dragi.
           </p>
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+          <div className="flex flex-col gap-4 sm:flex-row">
             <Link
               href="/contact"
-              className="rounded bg-gold-500 px-8 py-3.5 text-sm font-medium text-white transition-colors hover:bg-gold-600"
+              className="inline-block rounded bg-gold-500 px-8 py-3.5 text-center text-sm font-medium text-white transition-colors hover:bg-gold-600"
             >
               Contactați-ne
             </Link>
             <Link
               href="/produse"
-              className="rounded border border-stone-600 px-8 py-3.5 text-sm font-medium text-stone-300 transition-colors hover:border-stone-400 hover:text-white"
+              className="inline-block rounded border border-stone-600 px-8 py-3.5 text-center text-sm font-medium text-stone-300 transition-colors hover:border-stone-400 hover:text-white"
             >
               Vezi catalog
             </Link>
           </div>
+
+          {/* Stats */}
+          <div className="mt-14 flex gap-8 border-t border-stone-800 pt-8">
+            {[
+              { value: "15+", label: "Ani experiență" },
+              { value: "24/7", label: "Disponibili" },
+              { value: "500+", label: "Familii ajutate" },
+            ].map((s) => (
+              <div key={s.label}>
+                <p className="font-display text-2xl font-semibold text-white">{s.value}</p>
+                <p className="mt-0.5 text-xs text-stone-400">{s.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+
+        {/* Right — 4 diagonal images (desktop only) */}
+        <div
+          className="relative hidden flex-1 lg:block"
+          style={{ clipPath: "polygon(8% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
+        >
+          <div className="grid h-full grid-cols-2 grid-rows-2">
+            {[
+              "https://images.unsplash.com/photo-1572547030508-9c9c9d2140bf?w=800&q=80",
+              "https://images.unsplash.com/photo-1699901610376-8f9fc9dea24b?w=800&q=80",
+              "https://images.unsplash.com/photo-1719870173939-e6638ab2ff0a?w=800&q=80",
+              "https://images.unsplash.com/photo-1644666218912-5c4069dc05f0?w=800&q=80",
+            ].map((src, i) => (
+              <div key={i} className="relative overflow-hidden">
+                <Image
+                  src={src}
+                  alt="PrimNord Granit"
+                  fill
+                  className="object-cover brightness-75 transition-transform duration-700 hover:scale-105"
+                  sizes="25vw"
+                  priority={i < 2}
+                />
+                <div className="absolute inset-0 bg-stone-950/20" />
+              </div>
+            ))}
+          </div>
+          {/* Thin gold vertical accent line on the diagonal edge */}
+          <div className="absolute inset-y-0 left-0 w-px bg-gold-500/40" />
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-8 z-10 hidden lg:block">
           <svg className="h-5 w-5 animate-bounce text-stone-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>
@@ -202,7 +260,7 @@ export default async function HomePage() {
               {featuredProducts.map((p) => (
                 <Link
                   key={p.id}
-                  href={`/produse/${p.id}`}
+                  href={`/produse/${p.slug || p.id}`}
                   className="group overflow-hidden rounded-xl bg-white ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
                 >
                   <div className="relative h-52 overflow-hidden">

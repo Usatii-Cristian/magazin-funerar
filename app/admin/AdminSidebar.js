@@ -24,7 +24,7 @@ const navLinks = [
   },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ onClose }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -33,15 +33,33 @@ export default function AdminSidebar() {
     router.push("/admin/login");
   }
 
+  function handleNavClick() {
+    onClose?.();
+  }
+
   return (
-    <aside className="flex w-64 shrink-0 flex-col bg-stone-900 text-white">
-      <div className="border-b border-stone-700 p-6">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-stone-400">
-          Admin
-        </p>
-        <h1 className="font-display text-lg font-semibold text-white">
-          PrimNord Granit
-        </h1>
+    <aside className="flex h-full w-64 shrink-0 flex-col bg-stone-900 text-white">
+      <div className="flex items-center justify-between border-b border-stone-700 p-6">
+        <div>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-stone-400">
+            Admin
+          </p>
+          <h1 className="font-display text-lg font-semibold text-white">
+            PrimNord Granit
+          </h1>
+        </div>
+        {/* Close button visible only on mobile */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-800 hover:text-white md:hidden"
+            aria-label="Închide"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 space-y-1 p-4">
@@ -49,6 +67,7 @@ export default function AdminSidebar() {
           <Link
             key={link.href}
             href={link.href}
+            onClick={handleNavClick}
             className={`flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm transition-colors ${
               pathname.startsWith(link.href)
                 ? "bg-stone-800 text-white"
@@ -65,6 +84,7 @@ export default function AdminSidebar() {
         <Link
           href="/"
           target="_blank"
+          onClick={handleNavClick}
           className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-stone-400 transition-colors hover:bg-stone-800 hover:text-white"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">

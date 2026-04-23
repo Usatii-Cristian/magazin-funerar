@@ -1,7 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProductById, getSimilarProducts } from "@/lib/db";
+import ImageGallery from "./ImageGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -49,29 +50,14 @@ export default async function ProductPage({ params }) {
     : null;
 
   const similar = await getSimilarProducts(product.category, product.id);
-
-  const badgeClass =
-    categoryBadge[product.category] ?? "bg-stone-100 text-stone-700";
-
-  const isLocalImage = product.image.startsWith("/uploads/");
+  const badgeClass = categoryBadge[product.category] ?? "bg-stone-100 text-stone-700";
 
   return (
     <>
-      {/* ── Full-width hero image ─────────────────────────────── */}
-      <div className="relative h-[65vh] min-h-[420px] w-full overflow-hidden">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority
-          unoptimized={isLocalImage}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-900/40 to-stone-900/10" />
-
+      {/* ── Hero image with lightbox ─────────────────────────── */}
+      <ImageGallery images={product.images} name={product.name}>
         {/* Back link */}
-        <div className="absolute left-6 top-6">
+        <div className="absolute left-6 top-6" onClick={(e) => e.stopPropagation()}>
           <Link
             href="/produse"
             className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/25"
@@ -83,8 +69,8 @@ export default async function ProductPage({ params }) {
           </Link>
         </div>
 
-        {/* Product title area */}
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-10">
+        {/* Title area */}
+        <div className="absolute inset-x-0 bottom-0 px-6 pb-10" onClick={(e) => e.stopPropagation()}>
           <div className="mx-auto max-w-6xl">
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
@@ -104,18 +90,14 @@ export default async function ProductPage({ params }) {
             </p>
           </div>
         </div>
-      </div>
+      </ImageGallery>
 
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <nav className="border-b border-stone-100 bg-white px-6 py-3 text-sm text-stone-500">
         <div className="mx-auto flex max-w-6xl items-center gap-2">
-          <Link href="/" className="transition-colors hover:text-gold-600">
-            Acasă
-          </Link>
+          <Link href="/" className="transition-colors hover:text-gold-600">Acasă</Link>
           <span>/</span>
-          <Link href="/produse" className="transition-colors hover:text-gold-600">
-            Monumente Funerare
-          </Link>
+          <Link href="/produse" className="transition-colors hover:text-gold-600">Monumente Funerare</Link>
           <span>/</span>
           <Link
             href={`/produse?categoria=${encodeURIComponent(product.category)}`}
@@ -124,9 +106,7 @@ export default async function ProductPage({ params }) {
             {product.category}
           </Link>
           <span>/</span>
-          <span className="max-w-[200px] truncate text-stone-800">
-            {product.name}
-          </span>
+          <span className="max-w-[200px] truncate text-stone-800">{product.name}</span>
         </div>
       </nav>
 
@@ -135,7 +115,7 @@ export default async function ProductPage({ params }) {
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-12 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px]">
 
-            {/* Description side */}
+            {/* Description + gallery */}
             <div>
               <h2 className="mb-4 font-display text-2xl font-semibold text-stone-900">
                 Descriere produs
@@ -158,15 +138,13 @@ export default async function ProductPage({ params }) {
                     <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">
                       {item.label}
                     </p>
-                    <p className="mt-1 font-medium text-stone-800">
-                      {item.value}
-                    </p>
+                    <p className="mt-1 font-medium text-stone-800">{item.value}</p>
                   </div>
                 ))}
               </div>
 
-              {/* Additional images gallery */}
-              {product.images && product.images.length > 1 && (
+              {/* Gallery thumbnails */}
+              {product.images.length > 1 && (
                 <div className="mt-10">
                   <h3 className="mb-4 font-display text-lg font-semibold text-stone-900">
                     Galerie foto
@@ -180,16 +158,18 @@ export default async function ProductPage({ params }) {
                           fill
                           className="object-cover"
                           sizes="(max-width: 640px) 33vw, 200px"
-                          unoptimized={img.startsWith("/uploads/")}
                         />
                       </div>
                     ))}
                   </div>
+                  <p className="mt-2 text-xs text-stone-400">
+                    Apăsați pe imaginea principală (sus) pentru zoom și galerie completă.
+                  </p>
                 </div>
               )}
             </div>
 
-            {/* Price / CTA side */}
+            {/* Price / CTA */}
             <div className="self-start lg:sticky lg:top-24">
               <div className="rounded-2xl border border-stone-100 bg-cream-50 p-8 shadow-sm">
                 {/* Price */}
@@ -209,8 +189,7 @@ export default async function ProductPage({ params }) {
                   </div>
                   {product.originalPrice && (
                     <p className="mt-2 text-sm font-medium text-emerald-600">
-                      Economisiți{" "}
-                      {formatPrice(product.originalPrice - product.price)}
+                      Economisiți {formatPrice(product.originalPrice - product.price)}
                     </p>
                   )}
                 </div>
@@ -232,21 +211,25 @@ export default async function ProductPage({ params }) {
                   ))}
                 </ul>
 
-                <Link
-                  href="/contact"
-                  className="block w-full rounded-lg bg-gold-500 py-4 text-center text-sm font-semibold text-white transition-colors hover:bg-gold-600"
-                >
-                  Solicită ofertă personalizată
-                </Link>
-                <p className="mt-3 text-center text-xs text-stone-400">
-                  Sau sunați:{" "}
+                {/* Equal CTA buttons */}
+                <div className="grid grid-cols-2 gap-3">
+                  <Link
+                    href="/contact"
+                    className="rounded-lg bg-gold-500 py-4 text-center text-sm font-semibold text-white transition-colors hover:bg-gold-600"
+                  >
+                    Ofertă
+                  </Link>
                   <a
                     href="tel:079175383"
-                    className="font-medium text-stone-600 hover:text-gold-600"
+                    className="flex items-center justify-center gap-1.5 rounded-lg border-2 border-stone-200 py-4 text-sm font-semibold text-stone-800 transition-colors hover:border-stone-400"
                   >
-                    079 175 383
+                    <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                    </svg>
+                    Sunați
                   </a>
-                </p>
+                </div>
+                <p className="mt-3 text-center text-xs text-stone-400">079 175 383</p>
               </div>
             </div>
           </div>
@@ -269,7 +252,7 @@ export default async function ProductPage({ params }) {
                 return (
                   <Link
                     key={p.id}
-                    href={`/produse/${p.id}`}
+                    href={`/produse/${p.slug || p.id}`}
                     className="group overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
                   >
                     <div className="relative h-52 overflow-hidden">
@@ -279,7 +262,6 @@ export default async function ProductPage({ params }) {
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        unoptimized={p.image.startsWith("/uploads/")}
                       />
                       <div className="absolute inset-0 bg-stone-900/25" />
                       <div className="absolute left-3 top-3 flex gap-2">
