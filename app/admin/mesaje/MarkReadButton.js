@@ -22,7 +22,7 @@ export default function MarkReadButton({ messageId, isRead, isDelivered }) {
   }
 
   return (
-    <div className="flex shrink-0 flex-col gap-2">
+    <div className="flex shrink-0 flex-row gap-2">
       {!isRead && (
         <button
           onClick={() => patch("read")}

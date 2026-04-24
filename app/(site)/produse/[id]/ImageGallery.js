@@ -1,10 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 export default function ImageGallery({ images, name, children }) {
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const pinchRef = useRef({ dist: null, scale: 1 });
+  const dragRef = useRef({ active: false, startX: 0, startY: 0, startOffX: 0, startOffY: 0, moved: false });
 
   useEffect(() => {
     if (lightboxIndex !== null) {
@@ -13,6 +18,11 @@ export default function ImageGallery({ images, name, children }) {
       document.body.style.overflow = "";
     }
     return () => { document.body.style.overflow = ""; };
+  }, [lightboxIndex]);
+
+  useEffect(() => {
+    setScale(1);
+    setOffset({ x: 0, y: 0 });
   }, [lightboxIndex]);
 
   useEffect(() => {
@@ -28,8 +38,83 @@ export default function ImageGallery({ images, name, children }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [lightboxIndex, images.length]);
 
+  // Pinch zoom (touch)
+  function getPinchDist(e) {
+    const [a, b] = e.touches;
+    return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+  }
+  function onTouchStart(e) {
+    if (e.touches.length === 2) {
+      pinchRef.current = { dist: getPinchDist(e), scale };
+    }
+  }
+  function onTouchMove(e) {
+    if (e.touches.length === 2 && pinchRef.current.dist !== null) {
+      const ratio = getPinchDist(e) / pinchRef.current.dist;
+      setScale(Math.min(4, Math.max(1, pinchRef.current.scale * ratio)));
+    }
+  }
+  function onTouchEnd() {
+    pinchRef.current.dist = null;
+  }
+
+  // Mouse drag-to-pan
+  function onMouseDown(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    dragRef.current = {
+      active: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      startOffX: offset.x,
+      startOffY: offset.y,
+      moved: false,
+    };
+    if (scale > 1) setIsDragging(true);
+  }
+
+  function onMouseMove(e) {
+    const d = dragRef.current;
+    if (!d.active || scale <= 1) return;
+    const dx = e.clientX - d.startX;
+    const dy = e.clientY - d.startY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) d.moved = true;
+    setOffset({ x: d.startOffX + dx, y: d.startOffY + dy });
+  }
+
+  function onMouseUp() {
+    if (!dragRef.current.active) return;
+    const moved = dragRef.current.moved;
+    dragRef.current.active = false;
+    dragRef.current.moved = false;
+    setIsDragging(false);
+    if (!moved) {
+      if (scale > 1) {
+        setScale(1);
+        setOffset({ x: 0, y: 0 });
+      } else {
+        setScale(2);
+      }
+    }
+  }
+
+  function onMouseLeave() {
+    if (dragRef.current.active) {
+      dragRef.current.active = false;
+      dragRef.current.moved = false;
+      setIsDragging(false);
+    }
+  }
+
   const mainImage = images[0] || "";
   const galleryImages = images.slice(1);
+
+  const imgCursor =
+    scale > 1
+      ? isDragging
+        ? "cursor-grabbing"
+        : "cursor-grab"
+      : "cursor-zoom-in";
 
   return (
     <>
@@ -56,13 +141,13 @@ export default function ImageGallery({ images, name, children }) {
           Zoom
         </div>
 
-        {/* Overlay content (back link, badges, title) — stop propagation so clicks don't open lightbox */}
+        {/* Overlay content — stop propagation so clicks don't open lightbox */}
         <div onClick={(e) => e.stopPropagation()} className="contents">
           {children}
         </div>
       </div>
 
-      {/* Gallery thumbnails — shown inside product details section via prop */}
+      {/* Gallery thumbnails */}
       {galleryImages.length > 0 && (
         <div className="mt-10">
           <h3 className="mb-4 font-display text-lg font-semibold text-stone-900">
@@ -106,6 +191,11 @@ export default function ImageGallery({ images, name, children }) {
             {lightboxIndex + 1} / {images.length}
           </div>
 
+          {/* Zoom/pan hint */}
+          <div className="absolute top-4 right-16 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/60">
+            {scale > 1 ? `${Math.round(scale * 100)}% — trageți pentru a muta` : "Click pentru zoom"}
+          </div>
+
           {/* Close */}
           <button
             className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20"
@@ -143,16 +233,30 @@ export default function ImageGallery({ images, name, children }) {
             </button>
           )}
 
-          {/* Image */}
+          {/* Image — click to zoom, drag to pan when zoomed */}
           <div
-            className="relative h-full w-full max-w-5xl p-4"
+            className={`relative h-full w-full max-w-5xl p-4 overflow-hidden select-none ${imgCursor}`}
             onClick={(e) => e.stopPropagation()}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUp}
+            onMouseLeave={onMouseLeave}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            style={{ touchAction: "none" }}
           >
             <Image
               src={images[lightboxIndex]}
               alt={`${name} ${lightboxIndex + 1}`}
               fill
-              className="object-contain"
+              draggable={false}
+              className="object-contain pointer-events-none"
+              style={{
+                transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+                transformOrigin: "center center",
+                transition: isDragging ? "none" : "transform 0.2s ease",
+              }}
               priority
             />
           </div>

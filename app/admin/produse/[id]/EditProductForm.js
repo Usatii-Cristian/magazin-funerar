@@ -152,7 +152,7 @@ export default function EditProductForm({ product }) {
         <p className="mt-0.5 text-sm text-stone-500">{product.name}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="max-w-2xl space-y-6">
         {/* Name */}
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-stone-700">
@@ -164,7 +164,7 @@ export default function EditProductForm({ product }) {
             required
             value={form.name}
             onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm font-bold text-stone-900 outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base font-bold text-stone-900 outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
 
@@ -178,7 +178,7 @@ export default function EditProductForm({ product }) {
             onChange={(e) =>
               setForm((p) => ({ ...p, category: e.target.value }))
             }
-            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           >
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
@@ -199,7 +199,7 @@ export default function EditProductForm({ product }) {
             onChange={(e) =>
               setForm((p) => ({ ...p, material: e.target.value }))
             }
-            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
 
@@ -218,7 +218,7 @@ export default function EditProductForm({ product }) {
               onChange={(e) =>
                 setForm((p) => ({ ...p, price: e.target.value }))
               }
-              className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+              className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
             />
           </div>
           <div>
@@ -235,7 +235,7 @@ export default function EditProductForm({ product }) {
                 setForm((p) => ({ ...p, discountPct: e.target.value }))
               }
               placeholder="Ex: 15"
-              className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+              className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
             />
           </div>
         </div>
@@ -267,7 +267,7 @@ export default function EditProductForm({ product }) {
             onChange={(e) =>
               setForm((p) => ({ ...p, description: e.target.value }))
             }
-            className="w-full resize-none rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full resize-none rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
 
@@ -284,7 +284,7 @@ export default function EditProductForm({ product }) {
               setForm((p) => ({ ...p, dimensions: e.target.value }))
             }
             placeholder="Ex: 100×50×30 cm"
-            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
 

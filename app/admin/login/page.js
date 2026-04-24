@@ -52,7 +52,7 @@ export default function AdminLogin() {
               value={form.email}
               onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
               placeholder="admin@example.com"
-              className="w-full rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+              className="w-full rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
             />
           </div>
 
@@ -68,7 +68,7 @@ export default function AdminLogin() {
                 setForm((p) => ({ ...p, password: e.target.value }))
               }
               placeholder="••••••••"
-              className="w-full rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+              className="w-full rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
             />
           </div>
 

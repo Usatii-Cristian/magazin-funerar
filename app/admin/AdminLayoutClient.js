@@ -43,7 +43,7 @@ export default function AdminLayoutClient({ children }) {
           </span>
         </div>
 
-        <div className="min-h-full p-6 md:p-8">{children}</div>
+        <div className="min-h-full p-4 md:p-8">{children}</div>
       </main>
     </div>
   );

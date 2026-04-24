@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -16,6 +17,8 @@ export async function PUT(request, { params }) {
   const { id } = await params;
   try {
     const data = await request.json();
+
+    // Update product without slug (avoids stale-client issue)
     const product = await prisma.product.update({
       where: { id },
       data: {
@@ -30,7 +33,12 @@ export async function PUT(request, { params }) {
         featured: data.featured || false,
       },
     });
-    return NextResponse.json(product);
+
+    // Always regenerate slug via raw — idempotent if name unchanged
+    const slug = await generateUniqueSlugRaw(prisma, data.name, id);
+    await setSlugRaw(prisma, id, slug);
+
+    return NextResponse.json({ ...product, slug });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

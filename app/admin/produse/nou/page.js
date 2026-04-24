@@ -130,7 +130,7 @@ export default function NewProductPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
@@ -138,9 +138,9 @@ export default function NewProductPage() {
                 setCategory(cat);
                 setStep(2);
               }}
-              className="rounded-xl border-2 border-stone-100 bg-white p-4 text-left transition-all hover:border-gold-400 hover:shadow-md"
+              className="rounded-xl border-2 border-stone-100 bg-white p-3 text-left transition-all hover:border-gold-400 hover:shadow-md"
             >
-              <span className="text-sm font-semibold text-stone-900">{cat}</span>
+              <span className="text-xs font-semibold text-stone-900 sm:text-sm">{cat}</span>
             </button>
           ))}
         </div>
@@ -169,7 +169,7 @@ export default function NewProductPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="max-w-2xl space-y-6">
         {/* Name */}
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-stone-700">
@@ -185,7 +185,7 @@ export default function NewProductPage() {
             value={form.name}
             onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
             placeholder="Ex: Monument Granit Negru Standard"
-            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm font-bold text-stone-900 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base font-bold text-stone-900 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
 
@@ -201,7 +201,7 @@ export default function NewProductPage() {
               setForm((p) => ({ ...p, material: e.target.value }))
             }
             placeholder="Ex: Granit negru, Marmură albă..."
-            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
 
@@ -224,7 +224,7 @@ export default function NewProductPage() {
                 setForm((p) => ({ ...p, price: e.target.value }))
               }
               placeholder="Ex: 3200"
-              className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+              className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
             />
           </div>
 
@@ -244,7 +244,7 @@ export default function NewProductPage() {
                 setForm((p) => ({ ...p, discountPct: e.target.value }))
               }
               placeholder="Ex: 15"
-              className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+              className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
             />
           </div>
         </div>
@@ -284,7 +284,7 @@ export default function NewProductPage() {
               setForm((p) => ({ ...p, description: e.target.value }))
             }
             placeholder="Descrieți produsul detaliat — material, finisaj, caracteristici..."
-            className="w-full resize-none rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full resize-none rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
 
@@ -301,7 +301,7 @@ export default function NewProductPage() {
               setForm((p) => ({ ...p, dimensions: e.target.value }))
             }
             placeholder="Ex: 100×50×30 cm, Înălțime 120 cm..."
-            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+            className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
 
