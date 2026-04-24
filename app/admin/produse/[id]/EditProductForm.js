@@ -45,8 +45,9 @@ export default function EditProductForm({ product }) {
     featured: product.featured,
   });
 
-  const [existingImages, setExistingImages] = useState(product.images || []);
-  const [newPreviews, setNewPreviews] = useState([]);
+  const [allImages, setAllImages] = useState(
+    (product.images || []).map((url) => ({ url, isExisting: true, file: null }))
+  );
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -60,22 +61,26 @@ export default function EditProductForm({ product }) {
 
   function handleFiles(e) {
     Array.from(e.target.files).forEach((file) => {
-      setNewPreviews((prev) => [
+      setAllImages((prev) => [
         ...prev,
-        { url: URL.createObjectURL(file), file },
+        { url: URL.createObjectURL(file), isExisting: false, file },
       ]);
     });
     e.target.value = "";
   }
 
-  function removeExisting(index) {
-    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  function removeImage(index) {
+    setAllImages((prev) => {
+      if (!prev[index].isExisting) URL.revokeObjectURL(prev[index].url);
+      return prev.filter((_, i) => i !== index);
+    });
   }
 
-  function removeNew(index) {
-    setNewPreviews((prev) => {
-      URL.revokeObjectURL(prev[index].url);
-      return prev.filter((_, i) => i !== index);
+  function setPrimary(index) {
+    setAllImages((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(index, 1);
+      return [item, ...next];
     });
   }
 
@@ -85,11 +90,12 @@ export default function EditProductForm({ product }) {
     setSaving(true);
 
     try {
+      const newFiles = allImages.filter((img) => !img.isExisting).map((img) => img.file);
       let newUrls = [];
-      if (newPreviews.length > 0) {
+      if (newFiles.length > 0) {
         setUploading(true);
         const fd = new FormData();
-        newPreviews.forEach(({ file }) => fd.append("images", file));
+        newFiles.forEach((file) => fd.append("images", file));
         const res = await fetch("/api/admin/upload", {
           method: "POST",
           body: fd,
@@ -100,6 +106,11 @@ export default function EditProductForm({ product }) {
         setUploading(false);
       }
 
+      let newIndex = 0;
+      const orderedImages = allImages.map((img) =>
+        img.isExisting ? img.url : newUrls[newIndex++]
+      );
+
       const body = {
         name: form.name,
         category: form.category,
@@ -109,7 +120,7 @@ export default function EditProductForm({ product }) {
         description: form.description,
         dimensions: form.dimensions || null,
         featured: form.featured,
-        images: [...existingImages, ...newUrls],
+        images: orderedImages,
       };
 
       const res = await fetch(`/api/admin/products/${product.id}`, {
@@ -128,11 +139,6 @@ export default function EditProductForm({ product }) {
       setUploading(false);
     }
   }
-
-  const allImages = [
-    ...existingImages.map((url) => ({ url, isExisting: true })),
-    ...newPreviews.map(({ url }) => ({ url, isExisting: false })),
-  ];
 
   return (
     <div>
@@ -314,7 +320,11 @@ export default function EditProductForm({ product }) {
             <div className="mb-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
               {allImages.map((img, i) => (
                 <div key={i} className="group relative">
-                  <div className="relative aspect-square overflow-hidden rounded-lg bg-stone-100">
+                  <div
+                    className={`relative aspect-square overflow-hidden rounded-lg bg-stone-100 ring-2 transition-all ${
+                      i === 0 ? "ring-gold-400" : "ring-transparent"
+                    }`}
+                  >
                     <Image
                       src={img.url}
                       alt=""
@@ -323,25 +333,36 @@ export default function EditProductForm({ product }) {
                       sizes="150px"
                       unoptimized={img.url.startsWith("/uploads/") || img.url.startsWith("blob:")}
                     />
+                    {i === 0 && (
+                      <div className="absolute bottom-1 left-1 rounded bg-gold-500/90 px-1.5 py-0.5 text-xs font-semibold text-white">
+                        Principal
+                      </div>
+                    )}
+                    {i > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setPrimary(i)}
+                        className="absolute inset-0 flex items-end justify-start p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                        title="Setează ca imagine principală"
+                      >
+                        <span className="rounded bg-stone-900/80 px-1.5 py-0.5 text-xs font-medium text-white">
+                          Principal
+                        </span>
+                      </button>
+                    )}
+                    {!img.isExisting && (
+                      <span className="absolute right-1 top-1 rounded bg-stone-900/70 px-1.5 py-0.5 text-xs text-white">
+                        Nou
+                      </span>
+                    )}
                   </div>
                   <button
                     type="button"
-                    onClick={() =>
-                      img.isExisting
-                        ? removeExisting(existingImages.indexOf(img.url))
-                        : removeNew(
-                            newPreviews.findIndex((p) => p.url === img.url)
-                          )
-                    }
+                    onClick={() => removeImage(i)}
                     className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow opacity-0 transition-opacity group-hover:opacity-100"
                   >
                     ×
                   </button>
-                  {!img.isExisting && (
-                    <span className="absolute bottom-1 left-1 rounded bg-stone-900/70 px-1.5 py-0.5 text-xs text-white">
-                      Nou
-                    </span>
-                  )}
                 </div>
               ))}
             </div>

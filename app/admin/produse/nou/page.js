@@ -67,6 +67,14 @@ export default function NewProductPage() {
     });
   }
 
+  function setPrimary(index) {
+    setImagePreviews((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(index, 1);
+      return [item, ...next];
+    });
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -331,7 +339,11 @@ export default function NewProductPage() {
             <div className="mb-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
               {imagePreviews.map((img, i) => (
                 <div key={i} className="group relative">
-                  <div className="relative aspect-square overflow-hidden rounded-lg bg-stone-100">
+                  <div
+                    className={`relative aspect-square overflow-hidden rounded-lg bg-stone-100 ring-2 transition-all ${
+                      i === 0 ? "ring-gold-400" : "ring-transparent"
+                    }`}
+                  >
                     <Image
                       src={img.url}
                       alt=""
@@ -339,6 +351,23 @@ export default function NewProductPage() {
                       className="object-cover"
                       sizes="150px"
                     />
+                    {i === 0 && (
+                      <div className="absolute bottom-1 left-1 rounded bg-gold-500/90 px-1.5 py-0.5 text-xs font-semibold text-white">
+                        Principal
+                      </div>
+                    )}
+                    {i > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setPrimary(i)}
+                        className="absolute inset-0 flex items-end justify-start p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                        title="Setează ca imagine principală"
+                      >
+                        <span className="rounded bg-stone-900/80 px-1.5 py-0.5 text-xs font-medium text-white">
+                          Principal
+                        </span>
+                      </button>
+                    )}
                   </div>
                   <button
                     type="button"
