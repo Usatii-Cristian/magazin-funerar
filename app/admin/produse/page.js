@@ -10,6 +10,23 @@ function fmt(n) {
 export default async function AdminProductsPage() {
   let products = [];
   try {
+    const count = await prisma.product.count();
+    if (count === 0) {
+      const { products: staticProducts } = await import("@/lib/data");
+      await prisma.product.createMany({
+        data: staticProducts.map((p) => ({
+          name: p.name,
+          category: p.category,
+          material: p.material || "Granit",
+          price: p.price,
+          originalPrice: p.originalPrice || null,
+          images: [p.image],
+          description: p.description,
+          dimensions: null,
+          featured: p.featured || false,
+        })),
+      });
+    }
     products = await prisma.product.findMany({ orderBy: { createdAt: "desc" } });
   } catch {}
 
@@ -38,18 +55,13 @@ export default async function AdminProductsPage() {
 
       {products.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed border-stone-200 bg-white py-20 text-center">
-          <p className="text-stone-500 mb-4">
-            Nu există produse în baza de date.
-          </p>
-          <div className="flex flex-col items-center gap-3">
-            <Link
-              href="/admin/produse/nou"
-              className="rounded-lg bg-stone-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-stone-800"
-            >
-              Adaugă primul produs
-            </Link>
-            <SeedButton />
-          </div>
+          <p className="text-stone-500 mb-4">Nu există produse în baza de date.</p>
+          <Link
+            href="/admin/produse/nou"
+            className="rounded-lg bg-stone-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-stone-800"
+          >
+            Adaugă primul produs
+          </Link>
         </div>
       ) : (
         <>
@@ -209,52 +221,5 @@ export default async function AdminProductsPage() {
         </>
       )}
     </div>
-  );
-}
-
-function SeedButton() {
-  return (
-    <form
-      action={async () => {
-        "use server";
-        const { default: prisma } = await import("@/lib/prisma");
-        const bcrypt = (await import("bcryptjs")).default;
-        const { products: staticProducts } = await import("@/lib/data");
-
-        const existing = await prisma.admin.findUnique({
-          where: { email: "cristiusa98@gmail.com" },
-        });
-        if (!existing) {
-          const passwordHash = await bcrypt.hash("smecherul1", 12);
-          await prisma.admin.create({
-            data: { email: "cristiusa98@gmail.com", passwordHash },
-          });
-        }
-
-        const count = await prisma.product.count();
-        if (count === 0) {
-          await prisma.product.createMany({
-            data: staticProducts.map((p) => ({
-              name: p.name,
-              category: p.category,
-              material: p.material || "Granit",
-              price: p.price,
-              originalPrice: p.originalPrice || null,
-              images: [p.image],
-              description: p.description,
-              dimensions: null,
-              featured: p.featured || false,
-            })),
-          });
-        }
-      }}
-    >
-      <button
-        type="submit"
-        className="text-sm text-stone-400 underline underline-offset-2 hover:text-stone-600"
-      >
-        Importă produse demo din catalog static
-      </button>
-    </form>
   );
 }
