@@ -169,7 +169,9 @@ export default function EditProductForm({ product }) {
             type="text"
             required
             value={form.name}
-            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, name: e.target.value.replace(/[0-9]/g, "") }))
+            }
             className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base font-bold text-stone-900 outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />
         </div>
@@ -217,12 +219,12 @@ export default function EditProductForm({ product }) {
               <span className="text-xs font-normal text-stone-400">(lei)</span>
             </label>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               required
-              min="1"
               value={form.price}
               onChange={(e) =>
-                setForm((p) => ({ ...p, price: e.target.value }))
+                setForm((p) => ({ ...p, price: e.target.value.replace(/\D/g, "") }))
               }
               className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
             />
@@ -233,12 +235,11 @@ export default function EditProductForm({ product }) {
               <span className="text-xs font-normal text-stone-400">(%, opțional)</span>
             </label>
             <input
-              type="number"
-              min="1"
-              max="99"
+              type="text"
+              inputMode="numeric"
               value={form.discountPct}
               onChange={(e) =>
-                setForm((p) => ({ ...p, discountPct: e.target.value }))
+                setForm((p) => ({ ...p, discountPct: e.target.value.replace(/\D/g, "") }))
               }
               placeholder="Ex: 15"
               className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"

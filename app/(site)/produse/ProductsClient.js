@@ -47,6 +47,37 @@ function formatPrice(n) {
   return n.toLocaleString("ro-RO") + " lei";
 }
 
+const PAGE_SIZE = 12;
+
+function PriceFilter({ priceRange, onChange }) {
+  return (
+    <div className="mt-5 border-t border-stone-100 pt-5">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-400">
+        Preț (lei)
+      </p>
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder="Min"
+          value={priceRange.min}
+          onChange={(e) => onChange("min", e.target.value.replace(/\D/g, ""))}
+          className="w-full rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20"
+        />
+        <span className="shrink-0 text-stone-300">—</span>
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder="Max"
+          value={priceRange.max}
+          onChange={(e) => onChange("max", e.target.value.replace(/\D/g, ""))}
+          className="w-full rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20"
+        />
+      </div>
+    </div>
+  );
+}
+
 function FilterList({ active, onSelect, onClose }) {
   return (
     <nav className="space-y-0.5">
@@ -73,11 +104,34 @@ function FilterList({ active, onSelect, onClose }) {
 export default function ProductsClient({ products, initialCategory = "Toate" }) {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
 
-  const filtered =
-    activeCategory === "Toate"
-      ? products
-      : products.filter((p) => p.category === activeCategory);
+  function handleCategorySelect(cat) {
+    setActiveCategory(cat);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  function handlePriceChange(field, value) {
+    setPriceRange((prev) => ({ ...prev, [field]: value }));
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  const filtered = products.filter((p) => {
+    if (activeCategory !== "Toate" && p.category !== activeCategory) return false;
+    const min = parseInt(priceRange.min);
+    const max = parseInt(priceRange.max);
+    if (!isNaN(min) && p.price < min) return false;
+    if (!isNaN(max) && p.price > max) return false;
+    return true;
+  });
+
+  const displayed = filtered.slice(0, visibleCount);
+  const hasMore = filtered.length > visibleCount;
+
+  const activeFilterCount =
+    (activeCategory !== "Toate" ? 1 : 0) +
+    (priceRange.min || priceRange.max ? 1 : 0);
 
   return (
     <section className="bg-cream-50 px-6 py-16">
@@ -92,9 +146,9 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
             </svg>
             Filtre
-            {activeCategory !== "Toate" && (
+            {activeFilterCount > 0 && (
               <span className="rounded-full bg-stone-900 px-2 py-0.5 text-xs text-white">
-                1
+                {activeFilterCount}
               </span>
             )}
           </button>
@@ -131,9 +185,10 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
               </p>
               <FilterList
                 active={activeCategory}
-                onSelect={setActiveCategory}
+                onSelect={handleCategorySelect}
                 onClose={() => setDrawerOpen(false)}
               />
+              <PriceFilter priceRange={priceRange} onChange={handlePriceChange} />
             </div>
           </div>
         )}
@@ -145,10 +200,8 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-400">
                 Categorie
               </p>
-              <FilterList
-                active={activeCategory}
-                onSelect={setActiveCategory}
-              />
+              <FilterList active={activeCategory} onSelect={handleCategorySelect} />
+              <PriceFilter priceRange={priceRange} onChange={handlePriceChange} />
             </div>
           </aside>
 
@@ -166,68 +219,85 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                 Nu există produse în această categorie.
               </p>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {filtered.map((p) => {
-                  const pct = p.originalPrice
-                    ? Math.round((1 - p.price / p.originalPrice) * 100)
-                    : null;
-                  return (
-                    <Link
-                      key={p.id}
-                      href={`/produse/${p.slug || p.id}`}
-                      className="group overflow-hidden rounded-xl bg-white text-left shadow-sm ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
-                    >
-                      <div className="relative h-52 overflow-hidden">
-                        <Image
-                          src={p.image}
-                          alt={p.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                        <div className="absolute inset-0 bg-stone-900/25" />
-                        <div className="absolute left-3 top-3 flex gap-2">
-                          <span
-                            className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${categoryBadge[p.category] ?? "bg-stone-100 text-stone-700"}`}
-                          >
-                            {p.category}
-                          </span>
-                          {pct && (
-                            <span className="rounded bg-red-500 px-1.5 py-0.5 text-xs font-semibold text-white">
-                              -{pct}%
+              <>
+                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                  {displayed.map((p) => {
+                    const pct = p.originalPrice
+                      ? Math.round((1 - p.price / p.originalPrice) * 100)
+                      : null;
+                    return (
+                      <Link
+                        key={p.id}
+                        href={`/produse/${p.slug || p.id}`}
+                        className="group overflow-hidden rounded-xl bg-white text-left shadow-sm ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
+                      >
+                        <div className="relative h-52 overflow-hidden">
+                          <Image
+                            src={p.image}
+                            alt={p.name}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            unoptimized={p.image?.startsWith("/uploads/")}
+                          />
+                          <div className="absolute inset-0 bg-stone-900/25" />
+                          <div className="absolute left-3 top-3 flex gap-2">
+                            <span
+                              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${categoryBadge[p.category] ?? "bg-stone-100 text-stone-700"}`}
+                            >
+                              {p.category}
                             </span>
-                          )}
+                            {pct && (
+                              <span className="rounded bg-red-500 px-1.5 py-0.5 text-xs font-semibold text-white">
+                                -{pct}%
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="p-5">
-                        <p className="text-xs font-medium uppercase tracking-wider text-gold-500">
-                          {p.material}
-                        </p>
-                        <h3 className="mt-1 font-display text-base font-semibold text-stone-900 transition-colors group-hover:text-gold-600">
-                          {p.name}
-                        </h3>
-                        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-stone-500">
-                          {p.description}
-                        </p>
-                        <div className="mt-4 flex items-center gap-3">
-                          <span className="font-display text-lg font-semibold text-stone-900">
-                            {formatPrice(p.price)}
-                          </span>
-                          {p.originalPrice && (
-                            <span className="text-sm text-stone-400 line-through">
-                              {formatPrice(p.originalPrice)}
+                        <div className="p-5">
+                          <p className="text-xs font-medium uppercase tracking-wider text-gold-500">
+                            {p.material}
+                          </p>
+                          <h3 className="mt-1 font-display text-base font-semibold text-stone-900 transition-colors group-hover:text-gold-600">
+                            {p.name}
+                          </h3>
+                          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-stone-500">
+                            {p.description}
+                          </p>
+                          <div className="mt-4 flex items-center gap-3">
+                            <span className="font-display text-lg font-semibold text-stone-900">
+                              {formatPrice(p.price)}
                             </span>
-                          )}
+                            {p.originalPrice && (
+                              <span className="text-sm text-stone-400 line-through">
+                                {formatPrice(p.originalPrice)}
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-3 text-xs font-medium text-gold-600 underline-offset-2 group-hover:underline">
+                            Vezi detalii →
+                          </p>
                         </div>
-                        <p className="mt-3 text-xs font-medium text-gold-600 underline-offset-2 group-hover:underline">
-                          Vezi detalii →
-                        </p>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                {hasMore && (
+                  <div className="mt-10 text-center">
+                    <button
+                      onClick={() => setVisibleCount((v) => v + PAGE_SIZE)}
+                      className="rounded-lg border border-stone-300 bg-white px-8 py-3 text-sm font-medium text-stone-700 shadow-sm transition hover:border-gold-400 hover:text-gold-700"
+                    >
+                      Încarcă mai multe{" "}
+                      <span className="text-stone-400">
+                        ({filtered.length - visibleCount} rămase)
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </>
             )}
 
             <div className="mt-14 text-center">

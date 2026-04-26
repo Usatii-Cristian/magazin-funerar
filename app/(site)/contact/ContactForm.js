@@ -7,7 +7,11 @@ export default function ContactForm() {
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
 
   function handleChange(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    let filtered = value;
+    if (name === "name") filtered = value.replace(/[0-9]/g, "");
+    if (name === "phone") filtered = value.replace(/\D/g, "");
+    setForm((prev) => ({ ...prev, [name]: filtered }));
   }
 
   async function handleSubmit(e) {
@@ -83,7 +87,8 @@ export default function ContactForm() {
         <input
           id="phone"
           name="phone"
-          type="tel"
+          type="text"
+          inputMode="numeric"
           required
           value={form.phone}
           onChange={handleChange}

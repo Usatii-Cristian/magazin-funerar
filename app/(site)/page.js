@@ -126,12 +126,6 @@ export default async function HomePage() {
           <div className="absolute inset-y-0 left-0 w-px bg-gold-500/40" />
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-8 z-10 hidden lg:block">
-          <svg className="h-5 w-5 animate-bounce text-stone-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-          </svg>
-        </div>
       </section>
 
       {/* ── Categories catalog ───────────────────────────────────── */}

@@ -3,7 +3,27 @@ import { NextResponse } from "next/server";
 const TELEGRAM_TOKEN =
   process.env.TELEGRAM_BOT_TOKEN ||
   "8559936198:AAEA_Y_iBuq1TF4HQHhdi1v9MAmAKr1CjPA";
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "-5141877015";
+
+const TELEGRAM_CHAT_IDS = [
+  process.env.TELEGRAM_CHAT_ID || "-5141877015",
+  process.env.TELEGRAM_CHAT_ID_2,
+].filter(Boolean);
+
+async function sendToOne(chatId, text) {
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+      }
+    );
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
 
 async function sendTelegram(name, phone, message, date) {
   const text =
@@ -12,23 +32,8 @@ async function sendTelegram(name, phone, message, date) {
     `📞 <b>Telefon:</b> ${phone}\n` +
     `💬 <b>Mesaj:</b> ${message}\n` +
     `🕐 <b>Data:</b> ${date}`;
-  try {
-    const res = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text,
-          parse_mode: "HTML",
-        }),
-      }
-    );
-    return res.ok;
-  } catch {
-    return false;
-  }
+  const results = await Promise.all(TELEGRAM_CHAT_IDS.map((id) => sendToOne(id, text)));
+  return results.some(Boolean);
 }
 
 export async function POST(request) {
