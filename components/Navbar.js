@@ -22,7 +22,6 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2"
           onClick={() => setOpen(false)}
         >
           <Image
@@ -32,14 +31,6 @@ export default function Navbar() {
             height={44}
             unoptimized
           />
-          <div className="flex flex-col leading-none">
-            <span className="font-display text-lg font-semibold tracking-wide text-stone-900">
-              PrimNord
-            </span>
-            <span className="text-xs tracking-[0.2em] text-gold-500 uppercase">
-              Granit
-            </span>
-          </div>
         </Link>
 
         {/* Desktop nav */}
