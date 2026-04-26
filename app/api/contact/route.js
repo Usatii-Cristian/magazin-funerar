@@ -9,6 +9,19 @@ const TELEGRAM_CHAT_IDS = [
   process.env.TELEGRAM_CHAT_ID_2,
 ].filter(Boolean);
 
+const STATUS_KEYBOARD = {
+  inline_keyboard: [
+    [
+      { text: "✅ Contactat", callback_data: "contactat" },
+      { text: "❌ Necontactat", callback_data: "necontactat" },
+    ],
+    [
+      { text: "📦 Livrat", callback_data: "livrat" },
+      { text: "⏳ Nelivrat", callback_data: "nelivrat" },
+    ],
+  ],
+};
+
 async function sendToOne(chatId, text) {
   try {
     const res = await fetch(
@@ -16,7 +29,12 @@ async function sendToOne(chatId, text) {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+        body: JSON.stringify({
+          chat_id: chatId,
+          text,
+          parse_mode: "HTML",
+          reply_markup: STATUS_KEYBOARD,
+        }),
       }
     );
     return res.ok;
