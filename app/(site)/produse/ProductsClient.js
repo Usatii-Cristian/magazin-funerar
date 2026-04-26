@@ -106,6 +106,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [search, setSearch] = useState("");
 
   function handleCategorySelect(cat) {
     setActiveCategory(cat);
@@ -117,12 +118,18 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
     setVisibleCount(PAGE_SIZE);
   }
 
+  function handleSearch(value) {
+    setSearch(value);
+    setVisibleCount(PAGE_SIZE);
+  }
+
   const filtered = products.filter((p) => {
     if (activeCategory !== "Toate" && p.category !== activeCategory) return false;
     const min = parseInt(priceRange.min);
     const max = parseInt(priceRange.max);
     if (!isNaN(min) && p.price < min) return false;
     if (!isNaN(max) && p.price > max) return false;
+    if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
@@ -207,6 +214,33 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
 
           {/* Products grid */}
           <div className="flex-1 min-w-0">
+            {/* Search bar */}
+            <div className="mb-5 relative">
+              <svg
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
+                fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Caută produs..."
+                value={search}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-full rounded-xl border border-stone-200 bg-white py-2.5 pl-9 pr-4 text-sm text-stone-700 shadow-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+              />
+              {search && (
+                <button
+                  onClick={() => handleSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
             <div className="mb-6 flex items-center justify-between">
               <p className="text-sm text-stone-500">
                 <span className="font-semibold text-stone-800">{filtered.length}</span>{" "}
