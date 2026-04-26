@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import AdminSidebar from "./AdminSidebar";
 
 export default function AdminLayoutClient({ children }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  if (pathname === "/admin/login") return <>{children}</>;
+
 
   return (
     <div className="flex h-screen bg-stone-100">
