@@ -27,8 +27,8 @@ export default function Navbar() {
           <Image
             src="/logo.png"
             alt="PrimNord Granit"
-            width={44}
-            height={44}
+            width={64}
+            height={64}
             unoptimized
           />
         </Link>

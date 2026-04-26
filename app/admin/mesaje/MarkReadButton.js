@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function MarkReadButton({ messageId, isRead, isDelivered }) {
+export default function StatusButtons({ messageId, isRead, isDelivered }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(null); // "read" | "deliver" | null
+  const [loading, setLoading] = useState(null);
 
   async function patch(action) {
     setLoading(action);
@@ -22,25 +22,37 @@ export default function MarkReadButton({ messageId, isRead, isDelivered }) {
   }
 
   return (
-    <div className="flex shrink-0 flex-row gap-2">
-      {!isRead && (
-        <button
-          onClick={() => patch("read")}
-          disabled={loading !== null}
-          className="rounded-lg bg-stone-100 px-3 py-1.5 text-xs font-medium text-stone-600 transition-colors hover:bg-stone-200 disabled:opacity-60"
-        >
-          {loading === "read" ? "..." : "Marchează citit"}
-        </button>
-      )}
-      {!isDelivered && (
-        <button
-          onClick={() => patch("deliver")}
-          disabled={loading !== null}
-          className="rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:opacity-60"
-        >
-          {loading === "deliver" ? "..." : "Marchează livrat"}
-        </button>
-      )}
+    <div className="flex flex-wrap gap-2">
+      <button
+        onClick={() => patch(isRead ? "unread" : "read")}
+        disabled={loading !== null}
+        className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60 ${
+          isRead
+            ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+            : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+        }`}
+      >
+        {loading === "read" || loading === "unread"
+          ? "..."
+          : isRead
+          ? "✅ Contactat"
+          : "❌ Necontactat"}
+      </button>
+      <button
+        onClick={() => patch(isDelivered ? "undeliver" : "deliver")}
+        disabled={loading !== null}
+        className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60 ${
+          isDelivered
+            ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+            : "bg-amber-50 text-amber-700 hover:bg-amber-100"
+        }`}
+      >
+        {loading === "deliver" || loading === "undeliver"
+          ? "..."
+          : isDelivered
+          ? "📦 Livrat"
+          : "⏳ Nelivrat"}
+      </button>
     </div>
   );
 }

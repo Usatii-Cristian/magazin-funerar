@@ -106,15 +106,14 @@ export default async function AdminMessagesPage() {
                     year: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
+                    timeZone: "Europe/Bucharest",
                   })}
                 </p>
-                {(!m.read || !m.delivered) && (
-                  <MarkReadButton
-                    messageId={m.id}
-                    isRead={m.read}
-                    isDelivered={m.delivered}
-                  />
-                )}
+                <MarkReadButton
+                  messageId={m.id}
+                  isRead={m.read}
+                  isDelivered={m.delivered}
+                />
               </div>
             </div>
           ))}

@@ -9,20 +9,23 @@ const TELEGRAM_CHAT_IDS = [
   process.env.TELEGRAM_CHAT_ID_2,
 ].filter(Boolean);
 
-const STATUS_KEYBOARD = {
-  inline_keyboard: [
-    [
-      { text: "✅ Contactat", callback_data: "contactat" },
-      { text: "❌ Necontactat", callback_data: "necontactat" },
+function buildKeyboard(msgId) {
+  const id = msgId ?? "x";
+  return {
+    inline_keyboard: [
+      [
+        { text: "✅ Contactat", callback_data: `contactat:${id}` },
+        { text: "❌ Necontactat", callback_data: `necontactat:${id}` },
+      ],
+      [
+        { text: "📦 Livrat", callback_data: `livrat:${id}` },
+        { text: "⏳ Nelivrat", callback_data: `nelivrat:${id}` },
+      ],
     ],
-    [
-      { text: "📦 Livrat", callback_data: "livrat" },
-      { text: "⏳ Nelivrat", callback_data: "nelivrat" },
-    ],
-  ],
-};
+  };
+}
 
-async function sendToOne(chatId, text) {
+async function sendToOne(chatId, text, keyboard) {
   try {
     const res = await fetch(
       `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,
@@ -33,7 +36,7 @@ async function sendToOne(chatId, text) {
           chat_id: chatId,
           text,
           parse_mode: "HTML",
-          reply_markup: STATUS_KEYBOARD,
+          reply_markup: keyboard,
         }),
       }
     );
@@ -43,14 +46,17 @@ async function sendToOne(chatId, text) {
   }
 }
 
-async function sendTelegram(name, phone, message, date) {
+async function sendTelegram(name, phone, message, date, msgId) {
   const text =
     `📬 <b>Mesaj nou de contact!</b>\n\n` +
     `👤 <b>Nume:</b> ${name}\n` +
     `📞 <b>Telefon:</b> ${phone}\n` +
     `💬 <b>Mesaj:</b> ${message}\n` +
     `🕐 <b>Data:</b> ${date}`;
-  const results = await Promise.all(TELEGRAM_CHAT_IDS.map((id) => sendToOne(id, text)));
+  const keyboard = buildKeyboard(msgId);
+  const results = await Promise.all(
+    TELEGRAM_CHAT_IDS.map((id) => sendToOne(id, text, keyboard))
+  );
   return results.some(Boolean);
 }
 
@@ -69,17 +75,30 @@ export async function POST(request) {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Europe/Bucharest",
     });
 
-    const telegramSent = await sendTelegram(name, phone, message, date);
-
+    // Save to DB first to get the ID for Telegram buttons
+    let msgId = null;
     try {
       const { default: prisma } = await import("@/lib/prisma");
-      await prisma.message.create({
-        data: { name, phone, message, telegramSent },
+      const saved = await prisma.message.create({
+        data: { name, phone, message, telegramSent: false },
       });
-    } catch (dbError) {
-      console.warn("DB not connected, message not persisted:", dbError.message);
+      msgId = saved.id;
+    } catch {}
+
+    const telegramSent = await sendTelegram(name, phone, message, date, msgId);
+
+    // Update telegramSent flag
+    if (msgId) {
+      try {
+        const { default: prisma } = await import("@/lib/prisma");
+        await prisma.message.update({
+          where: { id: msgId },
+          data: { telegramSent },
+        });
+      } catch {}
     }
 
     return NextResponse.json({ ok: true }, { status: 200 });
