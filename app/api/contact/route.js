@@ -9,13 +9,19 @@ const TELEGRAM_CHAT_IDS = [
   process.env.TELEGRAM_CHAT_ID_2,
 ].filter(Boolean);
 
-function buildKeyboard(msgId) {
+export function buildKeyboard(msgId, isRead) {
   const id = msgId ?? "x";
   return {
     inline_keyboard: [
       [
-        { text: "✅ Contactat", callback_data: `contactat:${id}` },
-        { text: "❌ Necontactat", callback_data: `necontactat:${id}` },
+        {
+          text: isRead === true ? "✅ Contactat ✓" : "✅ Contactat",
+          callback_data: `contactat:${id}`,
+        },
+        {
+          text: isRead === false ? "❌ Necontactat ✓" : "❌ Necontactat",
+          callback_data: `necontactat:${id}`,
+        },
       ],
       [
         { text: "📦 Livrat", callback_data: `livrat:${id}` },
@@ -40,24 +46,26 @@ async function sendToOne(chatId, text, keyboard) {
         }),
       }
     );
-    return res.ok;
+    if (!res.ok) return null;
+    const { result } = await res.json();
+    return { chatId: String(chatId), msgId: result?.message_id };
   } catch {
-    return false;
+    return null;
   }
 }
 
-async function sendTelegram(name, phone, message, date, msgId) {
+async function sendTelegram(name, phone, message, date, dbMsgId) {
   const text =
     `📬 <b>Mesaj nou de contact!</b>\n\n` +
     `👤 <b>Nume:</b> ${name}\n` +
     `📞 <b>Telefon:</b> ${phone}\n` +
     `💬 <b>Mesaj:</b> ${message}\n` +
     `🕐 <b>Data:</b> ${date}`;
-  const keyboard = buildKeyboard(msgId);
+  const keyboard = buildKeyboard(dbMsgId, undefined);
   const results = await Promise.all(
     TELEGRAM_CHAT_IDS.map((id) => sendToOne(id, text, keyboard))
   );
-  return results.some(Boolean);
+  return results.filter(Boolean);
 }
 
 export async function POST(request) {
@@ -79,24 +87,24 @@ export async function POST(request) {
     });
 
     // Save to DB first to get the ID for Telegram buttons
-    let msgId = null;
+    let dbMsgId = null;
     try {
       const { default: prisma } = await import("@/lib/prisma");
       const saved = await prisma.message.create({
         data: { name, phone, message, telegramSent: false },
       });
-      msgId = saved.id;
+      dbMsgId = saved.id;
     } catch {}
 
-    const telegramSent = await sendTelegram(name, phone, message, date, msgId);
+    const sent = await sendTelegram(name, phone, message, date, dbMsgId);
+    const telegramSent = sent.length > 0;
 
-    // Update telegramSent flag
-    if (msgId) {
+    if (dbMsgId) {
       try {
         const { default: prisma } = await import("@/lib/prisma");
         await prisma.message.update({
-          where: { id: msgId },
-          data: { telegramSent },
+          where: { id: dbMsgId },
+          data: { telegramSent, telegramMessages: sent },
         });
       } catch {}
     }

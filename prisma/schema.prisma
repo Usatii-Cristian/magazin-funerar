@@ -39,12 +39,13 @@ model Product {
 }
 
 model Message {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  phone        String
-  message      String
-  read         Boolean  @default(false)
-  delivered    Boolean  @default(false)
-  telegramSent Boolean  @default(false)
-  createdAt    DateTime @default(now())
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  phone            String
+  message          String
+  read             Boolean  @default(false)
+  delivered        Boolean  @default(false)
+  telegramSent     Boolean  @default(false)
+  telegramMessages Json?
+  createdAt        DateTime @default(now())
 }
