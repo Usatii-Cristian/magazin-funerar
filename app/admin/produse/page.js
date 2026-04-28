@@ -3,32 +3,20 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import DeleteProductButton from "./DeleteProductButton";
 
+export const dynamic = "force-dynamic";
+
 function fmt(n) {
   return n.toLocaleString("ro-RO") + " lei";
 }
 
 export default async function AdminProductsPage() {
   let products = [];
+  let dbError = null;
   try {
-    const count = await prisma.product.count();
-    if (count === 0) {
-      const { products: staticProducts } = await import("@/lib/data");
-      await prisma.product.createMany({
-        data: staticProducts.map((p) => ({
-          name: p.name,
-          category: p.category,
-          material: p.material || "Granit",
-          price: p.price,
-          originalPrice: p.originalPrice || null,
-          images: [p.image],
-          description: p.description,
-          dimensions: null,
-          featured: p.featured || false,
-        })),
-      });
-    }
     products = await prisma.product.findMany({ orderBy: { createdAt: "desc" } });
-  } catch {}
+  } catch (err) {
+    dbError = err.message || "Eroare la conectare cu baza de date";
+  }
 
   return (
     <div>
@@ -53,7 +41,14 @@ export default async function AdminProductsPage() {
         </Link>
       </div>
 
-      {products.length === 0 ? (
+      {dbError && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          <p className="font-semibold">Eroare la conectare cu baza de date:</p>
+          <p className="mt-1 font-mono text-xs">{dbError}</p>
+        </div>
+      )}
+
+      {products.length === 0 && !dbError ? (
         <div className="rounded-2xl border-2 border-dashed border-stone-200 bg-white py-20 text-center">
           <p className="text-stone-500 mb-4">Nu există produse în baza de date.</p>
           <Link
@@ -75,7 +70,6 @@ export default async function AdminProductsPage() {
                 key={p.id}
                 className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-stone-100"
               >
-                {/* Image */}
                 <div className="relative h-48 bg-stone-100">
                   {img ? (
                     <Image
@@ -111,7 +105,6 @@ export default async function AdminProductsPage() {
                   </div>
                 </div>
 
-                {/* Info */}
                 <div className="p-4">
                   <p className="text-xs font-medium uppercase tracking-wider text-gold-500">
                     {p.material}
@@ -134,7 +127,6 @@ export default async function AdminProductsPage() {
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-2 border-t border-stone-100 px-4 py-3">
                   <Link
                     href={`/admin/produse/${p.id}`}

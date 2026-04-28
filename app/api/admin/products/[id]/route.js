@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
+import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -34,12 +34,18 @@ export async function PUT(request, { params }) {
       },
     });
 
-    // Always regenerate slug via raw — idempotent if name unchanged
-    const slug = await generateUniqueSlugRaw(prisma, data.name, id);
-    await setSlugRaw(prisma, id, slug);
+    // Slug regeneration is non-blocking — update already succeeded
+    let slug = slugify(data.name);
+    try {
+      slug = await generateUniqueSlugRaw(prisma, data.name, id);
+      await setSlugRaw(prisma, id, slug);
+    } catch (slugErr) {
+      console.error("Slug regen failed (update saved):", slugErr.message);
+    }
 
     return NextResponse.json({ ...product, slug });
   } catch (err) {
+    console.error("Product update failed:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

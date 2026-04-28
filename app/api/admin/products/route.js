@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
+import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
 
 export async function GET() {
   try {
@@ -17,7 +17,13 @@ export async function POST(request) {
   try {
     const data = await request.json();
 
-    // Create product without slug (avoids stale-client issue)
+    if (!data.name || !data.category || !data.price) {
+      return NextResponse.json(
+        { error: "Lipsesc câmpurile: nume, categorie sau preț" },
+        { status: 400 }
+      );
+    }
+
     const product = await prisma.product.create({
       data: {
         name: data.name,
@@ -25,19 +31,25 @@ export async function POST(request) {
         material: data.material || "Granit",
         price: parseInt(data.price),
         originalPrice: data.originalPrice ? parseInt(data.originalPrice) : null,
-        images: data.images || [],
-        description: data.description,
+        images: Array.isArray(data.images) ? data.images : [],
+        description: data.description || "",
         dimensions: data.dimensions || null,
         featured: data.featured || false,
       },
     });
 
-    // Set slug via raw command — bypasses stale Prisma client
-    const slug = await generateUniqueSlugRaw(prisma, data.name, product.id);
-    await setSlugRaw(prisma, product.id, slug);
+    // Slug generation must NOT fail the request — product is already saved
+    let slug = slugify(data.name);
+    try {
+      slug = await generateUniqueSlugRaw(prisma, data.name, product.id);
+      await setSlugRaw(prisma, product.id, slug);
+    } catch (slugErr) {
+      console.error("Slug generation failed (product saved):", slugErr.message);
+    }
 
     return NextResponse.json({ ...product, slug }, { status: 201 });
   } catch (err) {
+    console.error("Product create failed:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
