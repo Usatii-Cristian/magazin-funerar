@@ -1,32 +1,30 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { buildKeyboard } from "@/app/api/contact/route";
+import { buildKeyboard, buildMessageText, editMessage } from "@/lib/telegram";
 
-const TELEGRAM_TOKEN =
-  process.env.TELEGRAM_BOT_TOKEN ||
-  "8559936198:AAEA_Y_iBuq1TF4HQHhdi1v9MAmAKr1CjPA";
+async function syncTelegram(updated) {
+  const stored = updated.telegramMessages;
+  if (!Array.isArray(stored) || !stored.length) return;
 
-async function syncTelegram(telegramMessages, dbMsgId, isRead, isDelivered) {
-  if (!Array.isArray(telegramMessages) || !telegramMessages.length) return;
+  const isFinal = false; // admin panel toggles are reversible — never final
+  const text = buildMessageText({
+    name: updated.name,
+    phone: updated.phone,
+    message: updated.message,
+    createdAt: updated.createdAt,
+    read: updated.read,
+    delivered: updated.delivered,
+    isFinal,
+  });
 
-  const keyboard = isDelivered
+  // Match webhook behaviour: hide buttons once delivery state is set
+  const keyboard = updated.delivered
     ? { inline_keyboard: [] }
-    : buildKeyboard(dbMsgId, isRead);
+    : buildKeyboard(updated.id, updated.read);
 
   await Promise.all(
-    telegramMessages.map(({ chatId, msgId }) =>
-      fetch(
-        `https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageReplyMarkup`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: chatId,
-            message_id: msgId,
-            reply_markup: keyboard,
-          }),
-        }
-      ).catch(() => {})
+    stored.map(({ chatId, msgId }) =>
+      editMessage(chatId, msgId, text, keyboard)
     )
   );
 }
@@ -57,13 +55,7 @@ export async function PATCH(request) {
 
     const updated = await prisma.message.update({ where: { id }, data });
 
-    // Sync Telegram keyboards without blocking the response
-    syncTelegram(
-      updated.telegramMessages,
-      id,
-      updated.read,
-      updated.delivered
-    ).catch(() => {});
+    syncTelegram(updated).catch(() => {});
 
     return NextResponse.json(updated);
   } catch (err) {
