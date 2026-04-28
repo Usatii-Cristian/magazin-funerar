@@ -47,7 +47,7 @@ function formatPrice(n) {
   return n.toLocaleString("ro-RO") + " lei";
 }
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 9;
 
 function PriceFilter({ priceRange, onChange }) {
   return (
