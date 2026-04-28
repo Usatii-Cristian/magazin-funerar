@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 import {
   buildKeyboard,
   buildMessageText,
@@ -31,61 +32,68 @@ export async function POST(request) {
 
     if (!LABELS[action]) return NextResponse.json({ ok: true });
 
-    await answerCallback(callbackId, `Marcat: ${LABELS[action]}`);
-
     const isFinal = action === "livrat" || action === "nelivrat";
     const validId = msgId && msgId !== "x" && /^[a-f0-9]{24}$/.test(msgId);
 
     if (!validId) {
-      // No DB record — fallback: just clear or update keyboard on this message
-      const kb = isFinal
-        ? { inline_keyboard: [] }
-        : buildKeyboard(msgId, action === "contactat");
-      await editMessage(
-        chat.id,
-        message_id,
-        message.text ?? "",
-        kb
-      );
+      // Best-effort: just clear keyboard on this single message
+      await Promise.all([
+        answerCallback(callbackId, `Marcat: ${LABELS[action]}`),
+        editMessage(
+          chat.id,
+          message_id,
+          message.text ?? "",
+          isFinal
+            ? { inline_keyboard: [] }
+            : buildKeyboard(msgId, action === "contactat")
+        ),
+      ]);
       return NextResponse.json({ ok: true });
     }
 
-    // Update DB and propagate to all Telegram chats
-    try {
-      const { default: prisma } = await import("@/lib/prisma");
-
-      const updated = await prisma.message.update({
+    // Run callback ack and DB update in parallel — saves a round-trip
+    const [, updated] = await Promise.all([
+      answerCallback(callbackId, `Marcat: ${LABELS[action]}`),
+      prisma.message.update({
         where: { id: msgId },
         data: DB_UPDATE[action],
-      });
+      }),
+    ]);
 
-      const text = buildMessageText({
-        name: updated.name,
-        phone: updated.phone,
-        message: updated.message,
-        createdAt: updated.createdAt,
-        read: updated.read,
-        delivered: updated.delivered,
-        isFinal,
-      });
+    const text = buildMessageText({
+      name: updated.name,
+      phone: updated.phone,
+      message: updated.message,
+      createdAt: updated.createdAt,
+      read: updated.read,
+      delivered: updated.delivered,
+      isFinal,
+    });
 
-      const keyboard = isFinal
-        ? { inline_keyboard: [] }
-        : buildKeyboard(msgId, updated.read);
+    const keyboard = isFinal
+      ? { inline_keyboard: [] }
+      : buildKeyboard(msgId, updated.read);
 
-      const stored = updated.telegramMessages ?? [];
+    const stored = updated.telegramMessages ?? [];
 
-      // Update the message that was clicked, plus all synced copies
-      const targets = stored.length
-        ? stored
-        : [{ chatId: chat.id, msgId: message_id }];
+    // Prioritize the user's current message; sync other chats in parallel
+    const userKey = `${chat.id}:${message_id}`;
+    const seen = new Set();
+    const targets = [
+      { chatId: chat.id, msgId: message_id },
+      ...stored.filter((t) => {
+        const k = `${t.chatId}:${t.msgId}`;
+        if (k === userKey || seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      }),
+    ];
 
-      await Promise.all(
-        targets.map(({ chatId, msgId: tgMsgId }) =>
-          editMessage(chatId, tgMsgId, text, keyboard)
-        )
-      );
-    } catch {}
+    await Promise.all(
+      targets.map(({ chatId, msgId: tgMsgId }) =>
+        editMessage(chatId, tgMsgId, text, keyboard)
+      )
+    );
   } catch {}
 
   return NextResponse.json({ ok: true });

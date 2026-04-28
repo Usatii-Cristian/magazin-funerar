@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { fixProductIntegrity } from "@/lib/db";
 import DeleteProductButton from "./DeleteProductButton";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +16,13 @@ export default async function AdminProductsPage() {
   try {
     products = await prisma.product.findMany({ orderBy: { createdAt: "desc" } });
   } catch (err) {
-    dbError = err.message || "Eroare la conectare cu baza de date";
+    // Common cause: legacy data with null/missing required fields. Auto-fix and retry.
+    try {
+      await fixProductIntegrity();
+      products = await prisma.product.findMany({ orderBy: { createdAt: "desc" } });
+    } catch (err2) {
+      dbError = err2.message || err.message || "Eroare la conectare cu baza de date";
+    }
   }
 
   return (
