@@ -187,6 +187,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                   </svg>
                 </button>
               </div>
+              <PriceFilter priceRange={priceRange} onChange={handlePriceChange} />
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-400">
                 Categorie
               </p>
@@ -195,7 +196,6 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                 onSelect={handleCategorySelect}
                 onClose={() => setDrawerOpen(false)}
               />
-              <PriceFilter priceRange={priceRange} onChange={handlePriceChange} />
             </div>
           </div>
         )}
