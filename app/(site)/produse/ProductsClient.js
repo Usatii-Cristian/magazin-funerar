@@ -49,10 +49,10 @@ function formatPrice(n) {
 
 const PAGE_SIZE = 9;
 
-function PriceFilter({ priceRange, onChange }) {
+function PriceFilter({ priceRange, onChange, large }) {
   return (
-    <div className="mt-5 border-t border-stone-100 pt-5">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-400">
+    <div className={large ? "mb-6 pb-6 border-b border-stone-100" : "mt-5 border-t border-stone-100 pt-5"}>
+      <p className={`mb-2 font-semibold uppercase tracking-wider text-stone-400 ${large ? "text-xs" : "text-xs"}`}>
         Preț (lei)
       </p>
       <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ function PriceFilter({ priceRange, onChange }) {
           placeholder="Min"
           value={priceRange.min}
           onChange={(e) => onChange("min", e.target.value.replace(/\D/g, ""))}
-          className="w-full rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20"
+          className={`w-full rounded-lg border border-stone-200 bg-white text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20 ${large ? "px-3 py-2.5 text-sm" : "px-2 py-1.5 text-xs"}`}
         />
         <span className="shrink-0 text-stone-300">—</span>
         <input
@@ -71,7 +71,7 @@ function PriceFilter({ priceRange, onChange }) {
           placeholder="Max"
           value={priceRange.max}
           onChange={(e) => onChange("max", e.target.value.replace(/\D/g, ""))}
-          className="w-full rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20"
+          className={`w-full rounded-lg border border-stone-200 bg-white text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20 ${large ? "px-3 py-2.5 text-sm" : "px-2 py-1.5 text-xs"}`}
         />
       </div>
     </div>
@@ -202,13 +202,13 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
 
         <div className="flex gap-8">
           {/* Desktop sidebar */}
-          <aside className="hidden w-52 shrink-0 md:block">
+          <aside className="hidden w-56 shrink-0 md:block">
             <div className="sticky top-28">
+              <PriceFilter priceRange={priceRange} onChange={handlePriceChange} large />
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-400">
                 Categorie
               </p>
               <FilterList active={activeCategory} onSelect={handleCategorySelect} />
-              <PriceFilter priceRange={priceRange} onChange={handlePriceChange} />
             </div>
           </aside>
 

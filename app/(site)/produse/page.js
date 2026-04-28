@@ -32,26 +32,6 @@ export default async function ProductsPage({ searchParams }) {
       </section>
 
       <ProductsClient products={products} initialCategory={categoria || "Toate"} />
-
-      {/* Stats strip */}
-      <section className="bg-stone-900 px-6 py-16">
-        <div className="mx-auto max-w-4xl">
-          <div className="grid gap-8 text-center sm:grid-cols-3">
-            {[
-              { label: "Materiale", value: "Granit & Marmură" },
-              { label: "Garanție", value: "Lucrări garantate" },
-              { label: "Livrare", value: "Montaj inclus" },
-            ].map((item) => (
-              <div key={item.label}>
-                <p className="font-display text-xl font-semibold text-white">
-                  {item.value}
-                </p>
-                <p className="mt-1 text-sm text-stone-400">{item.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </>
   );
 }
