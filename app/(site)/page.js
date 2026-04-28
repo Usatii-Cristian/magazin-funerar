@@ -80,9 +80,6 @@ export default async function HomePage() {
             >
               Vezi catalog
             </Link>
-            <button className="inline-block rounded border border-gold-400 px-8 py-3.5 text-center text-sm font-medium text-gold-400 transition-colors hover:bg-gold-400 hover:text-white">
-              salut, test buton
-            </button>
           </div>
 
           {/* Stats */}
