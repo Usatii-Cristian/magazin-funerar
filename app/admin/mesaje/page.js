@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import MarkReadButton from "./MarkReadButton";
+import LiveRefresh from "./LiveRefresh";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function AdminMessagesPage() {
 
   return (
     <div>
+      <LiveRefresh />
       <div className="mb-6">
         <h1 className="font-display text-xl font-semibold text-stone-900 sm:text-2xl">
           Mesaje de contact

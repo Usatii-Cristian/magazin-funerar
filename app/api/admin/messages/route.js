@@ -6,7 +6,9 @@ async function syncTelegram(updated) {
   const stored = updated.telegramMessages;
   if (!Array.isArray(stored) || !stored.length) return;
 
-  const isFinal = false; // admin panel toggles are reversible — never final
+  // When buttons hide (delivered), the message is "finalizat"
+  const isFinal = updated.delivered === true;
+
   const text = buildMessageText({
     name: updated.name,
     phone: updated.phone,
@@ -17,8 +19,7 @@ async function syncTelegram(updated) {
     isFinal,
   });
 
-  // Match webhook behaviour: hide buttons once delivery state is set
-  const keyboard = updated.delivered
+  const keyboard = isFinal
     ? { inline_keyboard: [] }
     : buildKeyboard(updated.id, updated.read);
 
