@@ -1,7 +1,7 @@
 import { getProducts } from "@/lib/db";
 import ProductsClient from "./ProductsClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata = {
   title: "Monumente Funerare — PrimNord Granit",

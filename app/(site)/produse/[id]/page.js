@@ -1,10 +1,19 @@
+import { cache } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProductById, getSimilarProducts } from "@/lib/db";
+import { products as staticProducts } from "@/lib/data";
+import { slugify } from "@/lib/slugify";
 import ImageGallery from "./ImageGallery";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
+const getCachedProduct = cache(getProductById);
+
+export async function generateStaticParams() {
+  return staticProducts.map((p) => ({ id: slugify(p.name) }));
+}
 
 const categoryBadge = {
   "Monumente Standart": "bg-stone-100 text-stone-700",
@@ -31,17 +40,22 @@ function formatPrice(n) {
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const product = await getProductById(id);
+  const product = await getCachedProduct(id);
   if (!product) return {};
   return {
     title: `${product.name} — PrimNord Granit`,
     description: product.description,
+    openGraph: {
+      title: `${product.name} — PrimNord Granit`,
+      description: product.description,
+      images: product.image ? [{ url: product.image }] : [],
+    },
   };
 }
 
 export default async function ProductPage({ params }) {
   const { id } = await params;
-  const product = await getProductById(id);
+  const product = await getCachedProduct(id);
 
   if (!product) notFound();
 
