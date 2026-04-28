@@ -257,15 +257,23 @@ export default async function HomePage() {
                   href={`/produse/${p.slug || p.id}`}
                   className="group overflow-hidden rounded-xl bg-white ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
                 >
-                  <div className="relative h-52 overflow-hidden">
-                    <Image
-                      src={p.image}
-                      alt={p.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      unoptimized={p.image.startsWith("/uploads/")}
-                    />
+                  <div className="relative h-52 overflow-hidden bg-stone-100">
+                    {p.image ? (
+                      <Image
+                        src={p.image}
+                        alt={p.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        unoptimized={p.image.startsWith("/uploads/")}
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-stone-300">
+                        <svg className="h-12 w-12" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M4.5 3h15A1.5 1.5 0 0121 4.5v15a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5v-15A1.5 1.5 0 014.5 3z" />
+                        </svg>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-stone-900/25" />
                     {p.originalPrice && (
                       <span className="absolute left-3 top-3 rounded bg-red-500 px-1.5 py-0.5 text-xs font-semibold text-white">
