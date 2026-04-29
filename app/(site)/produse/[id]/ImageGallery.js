@@ -3,7 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
-export default function ImageGallery({ images, name, children }) {
+export default function ImageGallery({ images: rawImages, name, children }) {
+  const images = (rawImages ?? []).filter(
+    (s) => typeof s === "string" && s.length > 0
+  );
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
