@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { handleUpload } from "@vercel/blob/client";
+import { reportError } from "@/lib/errorTracking";
 
 export async function POST(request) {
   const body = await request.json();
@@ -18,7 +19,7 @@ export async function POST(request) {
 
     return NextResponse.json(jsonResponse);
   } catch (err) {
-    console.error("Upload token error:", err);
+    await reportError("admin:upload-token", err);
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
+import { reportError } from "@/lib/errorTracking";
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -50,7 +51,7 @@ export async function PUT(request, { params }) {
 
     return NextResponse.json({ ...product, slug });
   } catch (err) {
-    console.error("Product update failed:", err);
+    await reportError("admin:product-update", err, { id });
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
@@ -63,6 +64,7 @@ export async function DELETE(request, { params }) {
     revalidatePath("/produse");
     return NextResponse.json({ success: true });
   } catch (err) {
+    await reportError("admin:product-delete", err, { id });
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

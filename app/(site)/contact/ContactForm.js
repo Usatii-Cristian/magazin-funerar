@@ -1,10 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export default function ContactForm() {
-  const [form, setForm] = useState({ name: "", phone: "", message: "" });
+  const [form, setForm] = useState({ name: "", phone: "", message: "", hp: "" });
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    if (!RECAPTCHA_SITE_KEY) return;
+    if (typeof window === "undefined") return;
+    if (document.querySelector(`script[data-recaptcha]`)) return;
+    const s = document.createElement("script");
+    s.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    s.async = true;
+    s.defer = true;
+    s.dataset.recaptcha = "1";
+    document.head.appendChild(s);
+  }, []);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -14,19 +29,47 @@ export default function ContactForm() {
     setForm((prev) => ({ ...prev, [name]: filtered }));
   }
 
+  async function getRecaptchaToken() {
+    if (!RECAPTCHA_SITE_KEY) return null;
+    if (typeof window === "undefined" || !window.grecaptcha) return null;
+    return new Promise((resolve) => {
+      window.grecaptcha.ready(async () => {
+        try {
+          const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "contact" });
+          resolve(token);
+        } catch {
+          resolve(null);
+        }
+      });
+    });
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setStatus("loading");
+    setErrorMsg("");
     try {
+      const recaptchaToken = await getRecaptchaToken();
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, recaptchaToken }),
       });
-      if (!res.ok) throw new Error("Eroare server");
+      if (res.status === 429) {
+        setErrorMsg("Prea multe mesaje într-un timp scurt. Reveniți peste un minut.");
+        setStatus("error");
+        return;
+      }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setErrorMsg(data.error || "A apărut o eroare. Încercați din nou.");
+        setStatus("error");
+        return;
+      }
       setStatus("success");
-      setForm({ name: "", phone: "", message: "" });
+      setForm({ name: "", phone: "", message: "", hp: "" });
     } catch {
+      setErrorMsg("A apărut o eroare. Vă rugăm să încercați din nou.");
       setStatus("error");
     }
   }
@@ -64,6 +107,21 @@ export default function ContactForm() {
       onSubmit={handleSubmit}
       className="space-y-5 rounded-xl bg-white p-8 shadow-sm ring-1 ring-stone-100"
     >
+      {/* Honeypot — invisible to humans, filled by bots */}
+      <div className="hidden" aria-hidden="true">
+        <label>
+          Nu completați acest câmp
+          <input
+            type="text"
+            name="hp"
+            tabIndex={-1}
+            autoComplete="off"
+            value={form.hp}
+            onChange={handleChange}
+          />
+        </label>
+      </div>
+
       <div>
         <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-stone-700">
           Nume complet <span className="text-gold-500">*</span>
@@ -73,6 +131,7 @@ export default function ContactForm() {
           name="name"
           type="text"
           required
+          maxLength={100}
           value={form.name}
           onChange={handleChange}
           placeholder="Introduceți numele"
@@ -90,6 +149,7 @@ export default function ContactForm() {
           type="text"
           inputMode="numeric"
           required
+          maxLength={30}
           value={form.phone}
           onChange={handleChange}
           placeholder="Ex: 07XX XXX XXX"
@@ -106,6 +166,7 @@ export default function ContactForm() {
           name="message"
           required
           rows={5}
+          maxLength={2000}
           value={form.message}
           onChange={handleChange}
           placeholder="Descrieți pe scurt situația sau întrebarea dumneavoastră..."
@@ -115,7 +176,7 @@ export default function ContactForm() {
 
       {status === "error" && (
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-          A apărut o eroare. Vă rugăm să încercați din nou sau să ne sunați direct.
+          {errorMsg || "A apărut o eroare. Vă rugăm să încercați din nou sau să ne sunați direct."}
         </p>
       )}
 
@@ -128,7 +189,21 @@ export default function ContactForm() {
       </button>
 
       <p className="text-center text-xs text-stone-400">
-        Vom răspunde în cel mai scurt timp posibil.
+        {RECAPTCHA_SITE_KEY ? (
+          <>
+            Acest site este protejat de reCAPTCHA și se aplică{" "}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline">
+              Politica de confidențialitate
+            </a>{" "}
+            și{" "}
+            <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline">
+              Termenii Google
+            </a>
+            .
+          </>
+        ) : (
+          "Vom răspunde în cel mai scurt timp posibil."
+        )}
       </p>
     </form>
   );

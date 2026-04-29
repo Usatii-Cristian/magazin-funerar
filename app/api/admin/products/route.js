@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
+import { reportError } from "@/lib/errorTracking";
 
 export async function GET() {
   try {
@@ -54,7 +55,7 @@ export async function POST(request) {
 
     return NextResponse.json({ ...product, slug }, { status: 201 });
   } catch (err) {
-    console.error("Product create failed:", err);
+    await reportError("admin:product-create", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
