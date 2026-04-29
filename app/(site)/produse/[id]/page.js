@@ -96,10 +96,10 @@ export default async function ProductPage({ params }) {
                 </span>
               )}
             </div>
-            <h1 className="font-display text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl">
+            <h1 className="font-display text-3xl font-semibold leading-tight text-white break-words sm:text-4xl md:text-5xl">
               {product.name}
             </h1>
-            <p className="mt-2 text-base font-medium uppercase tracking-widest text-gold-400">
+            <p className="mt-2 text-base font-medium uppercase tracking-widest text-gold-400 break-all">
               {product.material}
             </p>
           </div>
@@ -134,7 +134,7 @@ export default async function ProductPage({ params }) {
               <h2 className="mb-4 font-display text-2xl font-semibold text-stone-900">
                 Descriere produs
               </h2>
-              <p className="text-base leading-relaxed text-stone-600">
+              <p className="break-words text-base leading-relaxed text-stone-600">
                 {product.description}
               </p>
 
@@ -148,39 +148,14 @@ export default async function ProductPage({ params }) {
                   { label: "Montaj", value: "Inclus în preț" },
                   { label: "Garanție", value: "Lucrare garantată" },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-lg bg-cream-50 p-4">
+                  <div key={item.label} className="overflow-hidden rounded-lg bg-cream-50 p-4">
                     <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">
                       {item.label}
                     </p>
-                    <p className="mt-1 font-medium text-stone-800">{item.value}</p>
+                    <p className="mt-1 break-all font-medium text-stone-800">{item.value}</p>
                   </div>
                 ))}
               </div>
-
-              {/* Gallery thumbnails */}
-              {product.images.length > 1 && (
-                <div className="mt-10">
-                  <h3 className="mb-4 font-display text-lg font-semibold text-stone-900">
-                    Galerie foto
-                  </h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {product.images.slice(1).map((img, i) => (
-                      <div key={i} className="relative aspect-square overflow-hidden rounded-lg">
-                        <Image
-                          src={img}
-                          alt={`${product.name} ${i + 2}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 640px) 33vw, 200px"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <p className="mt-2 text-xs text-stone-400">
-                    Apăsați pe imaginea principală (sus) pentru zoom și galerie completă.
-                  </p>
-                </div>
-              )}
             </div>
 
             {/* Price / CTA */}
@@ -302,10 +277,10 @@ export default async function ProductPage({ params }) {
                       <p className="text-xs font-medium uppercase tracking-wider text-gold-500">
                         {p.material}
                       </p>
-                      <h3 className="mt-1 font-display text-base font-semibold text-stone-900 transition-colors group-hover:text-gold-600">
+                      <h3 className="mt-1 line-clamp-2 break-words font-display text-base font-semibold text-stone-900 transition-colors group-hover:text-gold-600">
                         {p.name}
                       </h3>
-                      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-stone-500">
+                      <p className="mt-2 line-clamp-2 break-words text-sm leading-relaxed text-stone-500">
                         {p.description}
                       </p>
                       <div className="mt-4 flex items-center gap-3">

@@ -124,7 +124,7 @@ export default function ImageGallery({ images: rawImages, name, children }) {
     <>
       {/* Hero image — clickable */}
       <div
-        className={`relative h-[65vh] min-h-[420px] w-full overflow-hidden ${hasImages ? "cursor-zoom-in bg-stone-900" : "bg-stone-800"}`}
+        className={`relative h-[55vh] min-h-[360px] w-full overflow-hidden lg:max-h-[520px] ${hasImages ? "cursor-zoom-in bg-stone-900" : "bg-stone-800"}`}
         onClick={() => hasImages && setLightboxIndex(0)}
       >
         {hasImages ? (
@@ -163,11 +163,11 @@ export default function ImageGallery({ images: rawImages, name, children }) {
 
       {/* Gallery thumbnails */}
       {galleryImages.length > 0 && (
-        <div className="mt-10">
+        <div className="mx-auto mt-10 max-w-6xl px-6">
           <h3 className="mb-4 font-display text-lg font-semibold text-stone-900">
             Galerie foto
           </h3>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
             {images.map((img, i) => (
               <button
                 key={i}
@@ -181,10 +181,10 @@ export default function ImageGallery({ images: rawImages, name, children }) {
                   alt={`${name} ${i + 1}`}
                   fill
                   className="object-cover transition-transform duration-300 hover:scale-105"
-                  sizes="(max-width: 640px) 33vw, 200px"
+                  sizes="(max-width: 640px) 25vw, (max-width: 1024px) 16vw, 120px"
                 />
                 {i === 0 && (
-                  <div className="absolute bottom-1 left-1 rounded bg-gold-500/80 px-1.5 py-0.5 text-xs font-medium text-white">
+                  <div className="absolute bottom-0.5 left-0.5 rounded bg-gold-500/80 px-1 py-0.5 text-[10px] font-medium text-white">
                     Principal
                   </div>
                 )}
