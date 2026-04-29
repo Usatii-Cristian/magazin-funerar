@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { services, categories, companyInfo } from "@/lib/data";
+import { services, categories, companyInfo, testimonials } from "@/lib/data";
 import { getFeaturedProducts } from "@/lib/db";
+import QuickQuote from "@/components/QuickQuote";
 
 export const revalidate = 60;
 
@@ -321,6 +322,48 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ── Quick price calculator ──────────────────────────────── */}
+      <QuickQuote />
+
+      {/* ── Testimonials ────────────────────────────────────────── */}
+      <section className="bg-cream-50 px-6 py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 text-center">
+            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-gold-500">
+              Ce spun clienții noștri
+            </p>
+            <h2 className="font-display text-3xl font-semibold text-stone-900">
+              Mărturii de la familii pe care le-am ajutat
+            </h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {testimonials.map((t) => (
+              <figure
+                key={t.id}
+                className="flex flex-col rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-100"
+              >
+                <div className="mb-3 flex gap-0.5 text-gold-500">
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <svg key={i} className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.16c.969 0 1.371 1.24.588 1.81l-3.366 2.446a1 1 0 00-.364 1.118l1.287 3.957c.3.922-.755 1.688-1.54 1.118l-3.366-2.446a1 1 0 00-1.176 0l-3.366 2.446c-.784.57-1.838-.196-1.539-1.118l1.286-3.957a1 1 0 00-.364-1.118L2.07 9.384c-.783-.57-.38-1.81.588-1.81h4.161a1 1 0 00.951-.69l1.286-3.957z" />
+                    </svg>
+                  ))}
+                </div>
+                <blockquote className="grow text-sm leading-relaxed text-stone-600 [overflow-wrap:anywhere]">
+                  &ldquo;{t.text}&rdquo;
+                </blockquote>
+                <figcaption className="mt-4 border-t border-stone-100 pt-4">
+                  <p className="font-display text-sm font-semibold text-stone-900">
+                    {t.name}
+                  </p>
+                  <p className="text-xs text-stone-400">{t.location}</p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── Why us ──────────────────────────────────────────────── */}
       <section className="bg-white px-6 py-20">

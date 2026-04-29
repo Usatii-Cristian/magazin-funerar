@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import CompareButton from "@/components/CompareButton";
 
 const CATEGORIES = [
   "Toate",
@@ -322,6 +323,9 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                                 -{pct}%
                               </span>
                             )}
+                          </div>
+                          <div className="absolute right-3 top-3">
+                            <CompareButton productId={p.id} />
                           </div>
                         </div>
 
