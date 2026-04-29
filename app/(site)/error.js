@@ -3,16 +3,13 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
-// Standalone fallback (no site chrome) for errors in segments outside (site).
-// Branded version with full site chrome lives in app/(site)/error.js.
-
-export default function GlobalError({ error, reset }) {
+export default function SiteError({ error, reset }) {
   useEffect(() => {
-    console.error("App error:", error);
+    console.error("Site error:", error);
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cream-50 px-6">
+    <div className="flex min-h-[70vh] items-center justify-center bg-cream-50 px-6 py-20">
       <div className="mx-auto max-w-lg text-center">
         <p className="font-display text-7xl font-semibold text-gold-500 sm:text-8xl">
           500
@@ -21,7 +18,7 @@ export default function GlobalError({ error, reset }) {
           A apărut o eroare neașteptată
         </h1>
         <p className="mt-3 text-stone-500">
-          Reîncărcați pagina sau contactați-ne dacă problema persistă.
+          Ne pare rău, ceva nu a funcționat. Reîncărcați pagina sau contactați-ne dacă problema persistă.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <button

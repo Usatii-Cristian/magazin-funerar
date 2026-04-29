@@ -3,7 +3,13 @@ import { handleUpload } from "@vercel/blob/client";
 import { reportError } from "@/lib/errorTracking";
 
 export async function POST(request) {
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch (err) {
+    await reportError("admin:upload-body-parse", err);
+    return NextResponse.json({ error: "Cerere invalidă" }, { status: 400 });
+  }
 
   try {
     const jsonResponse = await handleUpload({

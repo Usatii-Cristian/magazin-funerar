@@ -289,10 +289,9 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                       ? Math.round((1 - p.price / p.originalPrice) * 100)
                       : null;
                     return (
-                      <Link
+                      <article
                         key={p.id}
-                        href={`/produse/${p.slug || p.id}`}
-                        className="group overflow-hidden rounded-xl bg-white text-left shadow-sm ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
+                        className="group relative overflow-hidden rounded-xl bg-white text-left shadow-sm ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
                       >
                         <div className="relative h-52 overflow-hidden bg-stone-100">
                           {p.image ? (
@@ -312,7 +311,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                             </div>
                           )}
                           <div className="absolute inset-0 bg-stone-900/25" />
-                          <div className="absolute left-3 top-3 flex gap-2">
+                          <div className="absolute left-3 top-3 z-10 flex gap-2">
                             <span
                               className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${categoryBadge[p.category] ?? "bg-stone-100 text-stone-700"}`}
                             >
@@ -324,7 +323,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                               </span>
                             )}
                           </div>
-                          <div className="absolute right-3 top-3">
+                          <div className="absolute right-3 top-3 z-20">
                             <CompareButton productId={p.id} />
                           </div>
                         </div>
@@ -334,7 +333,12 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                             {p.material}
                           </p>
                           <h3 className="mt-1 font-display text-base font-semibold text-stone-900 transition-colors group-hover:text-gold-600">
-                            {p.name}
+                            <Link
+                              href={`/produse/${p.slug || p.id}`}
+                              className="before:absolute before:inset-0 before:z-0 before:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+                            >
+                              {p.name}
+                            </Link>
                           </h3>
                           <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-stone-500">
                             {p.description}
@@ -353,7 +357,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                             Vezi detalii →
                           </p>
                         </div>
-                      </Link>
+                      </article>
                     );
                   })}
                 </div>

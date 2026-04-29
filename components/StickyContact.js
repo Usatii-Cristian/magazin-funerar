@@ -51,6 +51,11 @@ export default function StickyContact() {
     return () => clearTimeout(t);
   }, []);
 
+  // Close panel when route changes
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   useEffect(() => {
     if (!open) return;
     function onClickOutside(e) {

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 import { useCompare } from "@/lib/useCompare";
 
 function formatPrice(n) {
@@ -10,6 +11,17 @@ function formatPrice(n) {
 
 export default function CompareClient({ products }) {
   const { ids, hydrated, remove, clear } = useCompare();
+  const cleanedRef = useRef(false);
+
+  // Drop IDs that no longer exist in the catalog (deleted products) — once.
+  useEffect(() => {
+    if (!hydrated || cleanedRef.current) return;
+    cleanedRef.current = true;
+    const valid = new Set(products.map((p) => p.id));
+    ids.forEach((id) => {
+      if (!valid.has(id)) remove(id);
+    });
+  }, [hydrated, ids, products, remove]);
 
   if (!hydrated) {
     return (
@@ -143,16 +155,16 @@ export default function CompareClient({ products }) {
         </div>
 
         {/* Comparison table */}
-        <div className="mt-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-100">
-          <table className="w-full text-sm">
+        <div className="mt-8 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-stone-100">
+          <table className="w-full min-w-[480px] text-sm">
             <tbody>
               {rows.map((row, idx) => (
                 <tr key={row.label} className={idx % 2 === 0 ? "bg-cream-50/40" : ""}>
-                  <th className="w-1/4 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-500 sm:px-6">
+                  <th className="w-32 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-500 sm:w-40 sm:px-6">
                     {row.label}
                   </th>
                   {selected.map((p) => (
-                    <td key={p.id} className="px-4 py-3 text-stone-800 [overflow-wrap:anywhere] sm:px-6">
+                    <td key={p.id} className="px-4 py-3 align-top text-stone-800 [overflow-wrap:anywhere] sm:px-6">
                       {row.get(p)}
                     </td>
                   ))}
