@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { companyInfo } from "@/lib/data";
 
@@ -32,14 +32,40 @@ function PhoneIcon({ className }) {
   );
 }
 
+function ChatIcon({ className }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+    </svg>
+  );
+}
+
 export default function StickyContact() {
   const pathname = usePathname();
   const [shown, setShown] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
     const t = setTimeout(() => setShown(true), 800);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    function onEsc(e) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onEsc);
+    };
+  }, [open]);
 
   if (pathname?.startsWith("/admin")) return null;
 
@@ -47,30 +73,97 @@ export default function StickyContact() {
   const viberHref = `viber://chat?number=${companyInfo.phoneIntl}`;
   const telHref = `tel:${companyInfo.phoneIntl}`;
 
+  const options = [
+    {
+      label: "Telefon",
+      sublabel: companyInfo.phone,
+      href: telHref,
+      bg: "bg-stone-900 hover:bg-stone-800",
+      icon: <PhoneIcon className="h-5 w-5 text-gold-400" />,
+      external: false,
+    },
+    {
+      label: "WhatsApp",
+      sublabel: "Răspuns rapid",
+      href: waHref,
+      bg: "bg-[#25D366] hover:bg-[#1ebe5c]",
+      icon: <WhatsAppIcon className="h-5 w-5 text-white" />,
+      external: true,
+    },
+    {
+      label: "Viber",
+      sublabel: "Mesaj direct",
+      href: viberHref,
+      bg: "bg-[#7360F2] hover:bg-[#5d4dcf]",
+      icon: <ViberIcon className="h-5 w-5 text-white" />,
+      external: false,
+    },
+  ];
+
   return (
     <>
-      {/* Floating buttons — desktop */}
+      {/* Desktop: collapsible "Contactați-ne" panel */}
       <div
-        className={`fixed bottom-6 right-6 z-40 hidden flex-col gap-3 transition-opacity md:flex ${
-          shown ? "opacity-100" : "opacity-0"
-        }`}
+        ref={ref}
+        className={`fixed bottom-6 right-6 z-40 hidden md:block ${
+          shown ? "opacity-100" : "pointer-events-none opacity-0"
+        } transition-opacity`}
       >
-        <a
-          href={waHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Scrieți pe WhatsApp"
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all hover:scale-110 hover:bg-[#1ebe5c]"
+        {/* Expanded panel */}
+        <div
+          className={`mb-3 origin-bottom-right overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 transition-all ${
+            open
+              ? "scale-100 opacity-100 translate-y-0"
+              : "pointer-events-none scale-95 opacity-0 translate-y-2"
+          }`}
         >
-          <WhatsAppIcon className="h-7 w-7" />
-        </a>
-        <a
-          href={viberHref}
-          aria-label="Scrieți pe Viber"
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-[#7360F2] text-white shadow-lg transition-all hover:scale-110 hover:bg-[#5d4dcf]"
+          <div className="border-b border-stone-100 bg-stone-950 px-5 py-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-gold-400">
+              Contactați-ne
+            </p>
+            <p className="mt-0.5 text-sm text-stone-300">
+              Disponibili 24/7
+            </p>
+          </div>
+          <div className="flex flex-col p-2">
+            {options.map((opt) => (
+              <a
+                key={opt.label}
+                href={opt.href}
+                target={opt.external ? "_blank" : undefined}
+                rel={opt.external ? "noopener noreferrer" : undefined}
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-white transition ${opt.bg}`}
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
+                  {opt.icon}
+                </span>
+                <span className="flex flex-col leading-tight">
+                  <span className="text-sm font-semibold">{opt.label}</span>
+                  <span className="text-xs text-white/80">{opt.sublabel}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Toggle button */}
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-label={open ? "Închideți" : "Contactați-ne"}
+          className="ml-auto flex items-center gap-2 rounded-full bg-gold-500 px-5 py-3 text-sm font-semibold text-white shadow-lg ring-1 ring-black/5 transition hover:bg-gold-600"
         >
-          <ViberIcon className="h-7 w-7" />
-        </a>
+          {open ? (
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <ChatIcon className="h-5 w-5" />
+          )}
+          <span>{open ? "Închide" : "Contactați-ne"}</span>
+        </button>
       </div>
 
       {/* Mobile sticky bottom bar */}
@@ -81,11 +174,11 @@ export default function StickyContact() {
       >
         <a
           href={telHref}
-          aria-label="Sunați acum"
+          aria-label="Telefon"
           className="flex flex-col items-center justify-center gap-0.5 py-2.5 text-xs font-semibold text-stone-800 active:bg-stone-50"
         >
           <PhoneIcon className="h-5 w-5 text-gold-500" />
-          Sunați
+          Telefon
         </a>
         <a
           href={waHref}
