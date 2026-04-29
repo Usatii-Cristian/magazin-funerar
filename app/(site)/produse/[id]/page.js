@@ -96,10 +96,10 @@ export default async function ProductPage({ params }) {
                 </span>
               )}
             </div>
-            <h1 className="font-display text-3xl font-semibold leading-tight text-white break-words sm:text-4xl md:text-5xl">
+            <h1 className="font-display text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl [overflow-wrap:anywhere]">
               {product.name}
             </h1>
-            <p className="mt-2 text-base font-medium uppercase tracking-widest text-gold-400 break-all">
+            <p className="mt-2 text-base font-medium uppercase tracking-widest text-gold-400 [overflow-wrap:anywhere]">
               {product.material}
             </p>
           </div>
@@ -130,11 +130,11 @@ export default async function ProductPage({ params }) {
           <div className="grid gap-12 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px]">
 
             {/* Description + gallery */}
-            <div>
+            <div className="min-w-0">
               <h2 className="mb-4 font-display text-2xl font-semibold text-stone-900">
                 Descriere produs
               </h2>
-              <p className="break-words text-base leading-relaxed text-stone-600">
+              <p className="text-base leading-relaxed text-stone-600 [overflow-wrap:anywhere]">
                 {product.description}
               </p>
 
@@ -148,18 +148,18 @@ export default async function ProductPage({ params }) {
                   { label: "Montaj", value: "Inclus în preț" },
                   { label: "Garanție", value: "Lucrare garantată" },
                 ].map((item) => (
-                  <div key={item.label} className="overflow-hidden rounded-lg bg-cream-50 p-4">
+                  <div key={item.label} className="min-w-0 overflow-hidden rounded-lg bg-cream-50 p-4">
                     <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">
                       {item.label}
                     </p>
-                    <p className="mt-1 break-all font-medium text-stone-800">{item.value}</p>
+                    <p className="mt-1 font-medium text-stone-800 [overflow-wrap:anywhere]">{item.value}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Price / CTA */}
-            <div className="self-start lg:sticky lg:top-24">
+            <div className="min-w-0 self-start lg:sticky lg:top-24">
               <div className="rounded-2xl border border-stone-100 bg-cream-50 p-8 shadow-sm">
                 {/* Price */}
                 <div className="mb-6 border-b border-stone-200 pb-6">
