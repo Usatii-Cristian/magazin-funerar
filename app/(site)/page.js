@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { services, categories, companyInfo, testimonials } from "@/lib/data";
-import { getFeaturedProducts } from "@/lib/db";
+import { getFeaturedProducts, getProducts } from "@/lib/db";
 import QuickQuote from "@/components/QuickQuote";
 
 export const revalidate = 60;
@@ -37,7 +37,10 @@ function formatPrice(n) {
 }
 
 export default async function HomePage() {
-  const featuredProducts = await getFeaturedProducts();
+  const [featuredProducts, allProducts] = await Promise.all([
+    getFeaturedProducts(),
+    getProducts(),
+  ]);
 
   return (
     <>
@@ -324,7 +327,7 @@ export default async function HomePage() {
       )}
 
       {/* ── Quick price calculator ──────────────────────────────── */}
-      <QuickQuote />
+      <QuickQuote products={allProducts} />
 
       {/* ── Testimonials ────────────────────────────────────────── */}
       <section className="bg-cream-50 px-6 py-20">

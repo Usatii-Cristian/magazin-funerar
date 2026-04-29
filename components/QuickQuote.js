@@ -3,21 +3,63 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 
+// Each calculator category maps to one or more DB categories.
+// `fallback` kicks in only when there are no products yet in those DB categories.
 const CATEGORIES = [
-  { id: "monument-standard", label: "Monument standard", base: 6500 },
-  { id: "monument-dublu", label: "Monument dublu", base: 11500 },
-  { id: "monument-vip", label: "Monument VIP", base: 18000 },
-  { id: "monument-copii", label: "Monument copii", base: 4800 },
-  { id: "cruce", label: "Cruce", base: 2200 },
-  { id: "gard", label: "Gard mormânt", base: 3800 },
-  { id: "fundatie", label: "Fundație", base: 2500 },
-  { id: "accesorii", label: "Accesorii / Coroană", base: 800 },
+  {
+    id: "monument-standard",
+    label: "Monument standard",
+    dbCategories: ["Monumente Standart", "Monumente Gri"],
+    fallback: 6500,
+  },
+  {
+    id: "monument-dublu",
+    label: "Monument dublu",
+    dbCategories: ["Monumente Duble"],
+    fallback: 11500,
+  },
+  {
+    id: "monument-vip",
+    label: "Monument VIP",
+    dbCategories: ["Monumente Vip", "Monumente Complex"],
+    fallback: 18000,
+  },
+  {
+    id: "monument-copii",
+    label: "Monument copii",
+    dbCategories: ["Monumente Copii"],
+    fallback: 4800,
+  },
+  {
+    id: "cruce",
+    label: "Cruce",
+    dbCategories: ["Cruci"],
+    fallback: 2200,
+  },
+  {
+    id: "gard",
+    label: "Gard mormânt",
+    dbCategories: ["Garduri Morminte"],
+    fallback: 3800,
+  },
+  {
+    id: "fundatie",
+    label: "Fundație",
+    dbCategories: ["Fundatii din Granit", "Fundatii din Beton Armat"],
+    fallback: 2500,
+  },
+  {
+    id: "accesorii",
+    label: "Accesorii / Coroană",
+    dbCategories: ["Accesorii Monumente", "Coroane"],
+    fallback: 800,
+  },
 ];
 
 const MATERIALS = [
-  { id: "granit-standard", label: "Granit standard", mult: 1 },
-  { id: "granit-negru", label: "Granit negru premium", mult: 1.4 },
-  { id: "marmura", label: "Marmură", mult: 1.55 },
+  { id: "granit-standard", label: "Granit standard", mult: 1, match: ["granit"] },
+  { id: "granit-negru", label: "Granit negru premium", mult: 1.4, match: ["negru", "premium"] },
+  { id: "marmura", label: "Marmură", mult: 1.55, match: ["marmur"] },
 ];
 
 const SIZES = [
@@ -38,24 +80,53 @@ function formatPrice(n) {
   return Math.round(n).toLocaleString("ro-RO") + " lei";
 }
 
-export default function QuickQuote() {
+function pickProductsFor(products, dbCategories) {
+  const set = new Set(dbCategories);
+  return (products ?? []).filter(
+    (p) => set.has(p.category) && typeof p.price === "number" && p.price > 0
+  );
+}
+
+export default function QuickQuote({ products = [] }) {
   const [category, setCategory] = useState(CATEGORIES[0].id);
   const [material, setMaterial] = useState(MATERIALS[0].id);
   const [size, setSize] = useState(SIZES[1].id);
   const [extras, setExtras] = useState(new Set());
 
+  // Pre-compute price range per category from real products
+  const categoryRanges = useMemo(() => {
+    const map = {};
+    for (const cat of CATEGORIES) {
+      const matches = pickProductsFor(products, cat.dbCategories);
+      if (matches.length === 0) {
+        map[cat.id] = { min: cat.fallback, max: cat.fallback, count: 0 };
+      } else {
+        const prices = matches.map((p) => p.price);
+        map[cat.id] = {
+          min: Math.min(...prices),
+          max: Math.max(...prices),
+          count: matches.length,
+        };
+      }
+    }
+    return map;
+  }, [products]);
+
   const result = useMemo(() => {
-    const cat = CATEGORIES.find((c) => c.id === category);
+    const range = categoryRanges[category];
     const mat = MATERIALS.find((m) => m.id === material);
     const sz = SIZES.find((s) => s.id === size);
-    const base = cat.base * mat.mult * sz.mult;
     const extrasTotal = [...extras].reduce((sum, id) => {
       const ex = EXTRAS.find((e) => e.id === id);
       return sum + (ex?.add ?? 0);
     }, 0);
-    const total = base + extrasTotal;
-    return { min: total * 0.9, max: total * 1.15 };
-  }, [category, material, size, extras]);
+    const factor = mat.mult * sz.mult;
+    return {
+      min: range.min * factor + extrasTotal,
+      max: range.max * factor + extrasTotal,
+      count: range.count,
+    };
+  }, [categoryRanges, category, material, size, extras]);
 
   function toggleExtra(id) {
     setExtras((prev) => {
@@ -90,20 +161,28 @@ export default function QuickQuote() {
                 Tip produs
               </label>
               <div className="grid gap-2 sm:grid-cols-2">
-                {CATEGORIES.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => setCategory(c.id)}
-                    className={`rounded-lg border px-4 py-2.5 text-left text-sm transition ${
-                      category === c.id
-                        ? "border-gold-400 bg-gold-500/10 text-gold-300"
-                        : "border-stone-700 text-stone-300 hover:border-stone-500"
-                    }`}
-                  >
-                    {c.label}
-                  </button>
-                ))}
+                {CATEGORIES.map((c) => {
+                  const r = categoryRanges[c.id];
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setCategory(c.id)}
+                      className={`flex flex-col gap-0.5 rounded-lg border px-4 py-2.5 text-left text-sm transition ${
+                        category === c.id
+                          ? "border-gold-400 bg-gold-500/10 text-gold-300"
+                          : "border-stone-700 text-stone-300 hover:border-stone-500"
+                      }`}
+                    >
+                      <span>{c.label}</span>
+                      <span className="text-[11px] text-stone-500">
+                        {r.count > 0
+                          ? `${formatPrice(r.min)} – ${formatPrice(r.max)}`
+                          : "Estimare orientativă"}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -187,12 +266,20 @@ export default function QuickQuote() {
               Preț estimat
             </p>
             <p className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-4xl">
-              {formatPrice(result.min)}
-              <span className="text-stone-500"> — </span>
-              {formatPrice(result.max)}
+              {result.min === result.max
+                ? formatPrice(result.min)
+                : (
+                  <>
+                    {formatPrice(result.min)}
+                    <span className="text-stone-500"> — </span>
+                    {formatPrice(result.max)}
+                  </>
+                )}
             </p>
             <p className="mt-3 text-xs text-stone-400">
-              Estimare orientativă. Prețul final depinde de detalii precum gravura, design personalizat și locația montajului.
+              {result.count > 0
+                ? `Bazat pe ${result.count} ${result.count === 1 ? "produs" : "produse"} din catalog. Prețul final depinde de gravură, design și locație.`
+                : "Estimare orientativă. Prețul final depinde de gravură, design și locație."}
             </p>
 
             <div className="mt-6 flex flex-col gap-2">
