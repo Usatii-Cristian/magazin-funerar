@@ -64,11 +64,19 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-stone-800 pt-6 text-xs text-stone-500">
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-stone-800 pt-6 text-xs text-stone-500 sm:flex-row sm:items-center">
           <p>
             © {new Date().getFullYear()} PrimNord Granit. Toate drepturile
             rezervate.
           </p>
+          <div className="flex gap-5">
+            <Link href="/termeni" className="transition-colors hover:text-white">
+              Termeni și condiții
+            </Link>
+            <Link href="/confidentialitate" className="transition-colors hover:text-white">
+              Confidențialitate
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

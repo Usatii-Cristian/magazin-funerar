@@ -101,12 +101,21 @@ function FilterList({ active, onSelect, onClose }) {
   );
 }
 
+const SORT_OPTIONS = [
+  { value: "default", label: "Sortare implicită" },
+  { value: "price-asc", label: "Preț: crescător" },
+  { value: "price-desc", label: "Preț: descrescător" },
+  { value: "name-asc", label: "Alfabetic A-Z" },
+  { value: "name-desc", label: "Alfabetic Z-A" },
+];
+
 export default function ProductsClient({ products, initialCategory = "Toate" }) {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("default");
 
   function handleCategorySelect(cat) {
     setActiveCategory(cat);
@@ -133,8 +142,18 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
     return true;
   });
 
-  const displayed = filtered.slice(0, visibleCount);
-  const hasMore = filtered.length > visibleCount;
+  const sorted = [...filtered].sort((a, b) => {
+    switch (sort) {
+      case "price-asc": return a.price - b.price;
+      case "price-desc": return b.price - a.price;
+      case "name-asc": return a.name.localeCompare(b.name, "ro");
+      case "name-desc": return b.name.localeCompare(a.name, "ro");
+      default: return 0;
+    }
+  });
+
+  const displayed = sorted.slice(0, visibleCount);
+  const hasMore = sorted.length > visibleCount;
 
   const activeFilterCount =
     (activeCategory !== "Toate" ? 1 : 0) +
@@ -241,11 +260,20 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
               )}
             </div>
 
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-stone-500">
                 <span className="font-semibold text-stone-800">{filtered.length}</span>{" "}
                 produse{activeCategory !== "Toate" ? ` în ${activeCategory}` : ""}
               </p>
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-700 outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
             </div>
 
             {filtered.length === 0 ? (
@@ -334,7 +362,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                     >
                       Încarcă mai multe{" "}
                       <span className="text-stone-400">
-                        ({filtered.length - visibleCount} rămase)
+                        ({sorted.length - visibleCount} rămase)
                       </span>
                     </button>
                   </div>
