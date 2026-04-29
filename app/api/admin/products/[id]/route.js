@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
 
@@ -43,6 +44,10 @@ export async function PUT(request, { params }) {
       console.error("Slug regen failed (update saved):", slugErr.message);
     }
 
+    revalidatePath("/");
+    revalidatePath("/produse");
+    revalidatePath(`/produse/${slug}`);
+
     return NextResponse.json({ ...product, slug });
   } catch (err) {
     console.error("Product update failed:", err);
@@ -54,6 +59,8 @@ export async function DELETE(request, { params }) {
   const { id } = await params;
   try {
     await prisma.product.delete({ where: { id } });
+    revalidatePath("/");
+    revalidatePath("/produse");
     return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });

@@ -106,7 +106,8 @@ export default function ImageGallery({ images, name, children }) {
     }
   }
 
-  const mainImage = images[0] || "";
+  const hasImages = images.length > 0;
+  const mainImage = images[0];
   const galleryImages = images.slice(1);
 
   const imgCursor =
@@ -120,26 +121,36 @@ export default function ImageGallery({ images, name, children }) {
     <>
       {/* Hero image — clickable */}
       <div
-        className="relative h-[65vh] min-h-[420px] w-full cursor-zoom-in overflow-hidden"
-        onClick={() => setLightboxIndex(0)}
+        className={`relative h-[65vh] min-h-[420px] w-full overflow-hidden ${hasImages ? "cursor-zoom-in bg-stone-900" : "bg-stone-800"}`}
+        onClick={() => hasImages && setLightboxIndex(0)}
       >
-        <Image
-          src={mainImage}
-          alt={name}
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority
-        />
+        {hasImages ? (
+          <Image
+            src={mainImage}
+            alt={name}
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-stone-600">
+            <svg className="h-24 w-24" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M4.5 3h15A1.5 1.5 0 0121 4.5v15a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5v-15A1.5 1.5 0 014.5 3z" />
+            </svg>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-900/40 to-stone-900/10" />
 
         {/* Zoom hint */}
-        <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm">
-          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
-          </svg>
-          Zoom
-        </div>
+        {hasImages && (
+          <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm">
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+            </svg>
+            Zoom
+          </div>
+        )}
 
         {/* Overlay content — stop propagation so clicks don't open lightbox */}
         <div onClick={(e) => e.stopPropagation()} className="contents">

@@ -3,6 +3,8 @@ import Image from "next/image";
 import { services, categories, companyInfo } from "@/lib/data";
 import { getFeaturedProducts } from "@/lib/db";
 
+export const revalidate = 60;
+
 function ServiceIcon({ icon }) {
   if (icon === "ceremony")
     return (

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
 
@@ -46,6 +47,10 @@ export async function POST(request) {
     } catch (slugErr) {
       console.error("Slug generation failed (product saved):", slugErr.message);
     }
+
+    revalidatePath("/");
+    revalidatePath("/produse");
+    revalidatePath(`/produse/${slug}`);
 
     return NextResponse.json({ ...product, slug }, { status: 201 });
   } catch (err) {
