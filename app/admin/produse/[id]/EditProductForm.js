@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { upload } from "@vercel/blob/client";
+import { optimizeImage } from "@/lib/optimizeImage";
 
 function safeParse(text) {
   try {
@@ -103,12 +104,13 @@ export default function EditProductForm({ product }) {
       let newUrls = [];
       if (newFiles.length > 0) {
         setUploading(true);
+        const optimized = await Promise.all(newFiles.map((f) => optimizeImage(f)));
         const ext = (name) => {
           const e = name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "");
           return e || "jpg";
         };
         const results = await Promise.all(
-          newFiles.map((file) =>
+          optimized.map((file) =>
             upload(`products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext(file.name)}`, file, {
               access: "public",
               handleUploadUrl: "/api/admin/upload",

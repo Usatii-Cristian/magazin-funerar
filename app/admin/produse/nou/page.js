@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { upload } from "@vercel/blob/client";
+import { optimizeImage } from "@/lib/optimizeImage";
 
 const CATEGORIES = [
   "Monumente Standart",
@@ -94,12 +95,15 @@ export default function NewProductPage() {
 
       if (imagePreviews.length > 0) {
         setUploading(true);
+        const optimized = await Promise.all(
+          imagePreviews.map(({ file }) => optimizeImage(file))
+        );
         const ext = (name) => {
           const e = name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "");
           return e || "jpg";
         };
         const results = await Promise.all(
-          imagePreviews.map(({ file }) =>
+          optimized.map((file) =>
             upload(`products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext(file.name)}`, file, {
               access: "public",
               handleUploadUrl: "/api/admin/upload",
