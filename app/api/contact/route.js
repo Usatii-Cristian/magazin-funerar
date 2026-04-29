@@ -39,12 +39,20 @@ export async function POST(request) {
     return NextResponse.json({ error: "Cerere invalidă" }, { status: 400 });
   }
 
-  const { name, phone, message, hp, recaptchaToken } = body || {};
+  const { name: rawName, phone: rawPhone, message: rawMessage, hp, recaptchaToken } = body || {};
 
   // Honeypot — dacă e completat, e bot
   if (typeof hp === "string" && hp.trim() !== "") {
     return NextResponse.json({ ok: true }, { status: 200 });
   }
+
+  // Type-safe normalization
+  if (typeof rawName !== "string" || typeof rawPhone !== "string" || typeof rawMessage !== "string") {
+    return NextResponse.json({ error: "Câmpuri invalide" }, { status: 400 });
+  }
+  const name = rawName.trim();
+  const phone = rawPhone.trim();
+  const message = rawMessage.trim();
 
   if (!name || !phone || !message) {
     return NextResponse.json({ error: "Câmpuri lipsă" }, { status: 400 });

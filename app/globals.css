@@ -30,3 +30,9 @@ h2,
 h3 {
   font-family: var(--font-lora), Georgia, serif;
 }
+
+/* Hide the reCAPTCHA v3 badge — disclaimer text is shown in the contact form,
+   which satisfies Google's terms when the badge is hidden. */
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
