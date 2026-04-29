@@ -1,22 +1,24 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+import { handleUpload } from "@vercel/blob/client";
 
 export async function POST(request) {
+  const body = await request.json();
+
   try {
-    const formData = await request.formData();
-    const files = formData.getAll("images");
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async () => ({
+        allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"],
+        addRandomSuffix: true,
+        maximumSizeInBytes: 15 * 1024 * 1024,
+      }),
+      onUploadCompleted: async () => {},
+    });
 
-    const urls = [];
-    for (const file of files) {
-      if (!(file instanceof File)) continue;
-      const ext = file.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "");
-      const filename = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const blob = await put(filename, file, { access: "public" });
-      urls.push(blob.url);
-    }
-
-    return NextResponse.json({ urls });
+    return NextResponse.json(jsonResponse);
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("Upload token error:", err);
+    return NextResponse.json({ error: err.message }, { status: 400 });
   }
 }

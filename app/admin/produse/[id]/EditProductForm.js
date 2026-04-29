@@ -3,6 +3,15 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { upload } from "@vercel/blob/client";
+
+function safeParse(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: text.slice(0, 200) };
+  }
+}
 
 const CATEGORIES = [
   "Monumente Standart",
@@ -94,15 +103,19 @@ export default function EditProductForm({ product }) {
       let newUrls = [];
       if (newFiles.length > 0) {
         setUploading(true);
-        const fd = new FormData();
-        newFiles.forEach((file) => fd.append("images", file));
-        const res = await fetch("/api/admin/upload", {
-          method: "POST",
-          body: fd,
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Eroare upload imagini");
-        newUrls = data.urls;
+        const ext = (name) => {
+          const e = name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "");
+          return e || "jpg";
+        };
+        const results = await Promise.all(
+          newFiles.map((file) =>
+            upload(`products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext(file.name)}`, file, {
+              access: "public",
+              handleUploadUrl: "/api/admin/upload",
+            })
+          )
+        );
+        newUrls = results.map((r) => r.url);
         setUploading(false);
       }
 
@@ -128,8 +141,9 @@ export default function EditProductForm({ product }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Eroare la salvare");
+      const text = await res.text();
+      const data = text ? safeParse(text) : {};
+      if (!res.ok) throw new Error(data.error || `Eroare la salvare (${res.status})`);
 
       router.push("/admin/produse");
       router.refresh();
