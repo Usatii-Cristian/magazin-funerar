@@ -3,9 +3,17 @@ import Link from "next/link";
 import { services, companyInfo } from "@/lib/data";
 
 export const metadata = {
-  title: "Servicii — PrimNord Granit",
+  title: "Servicii Funerare Complete",
   description:
-    "Servicii funerare complete: organizare, transport, monumente și asistență acte.",
+    "Servicii funerare complete: organizare ceremonie, transport funerar, monumente din granit și marmură, asistență acte. Disponibili 24/7 în toată Moldova.",
+  alternates: { canonical: "/servicii" },
+  openGraph: {
+    title: "Servicii Funerare Complete | PrimNord Granit",
+    description:
+      "Servicii funerare complete: organizare ceremonie, transport funerar, monumente din granit și marmură, asistență acte.",
+    url: "/servicii",
+    type: "website",
+  },
 };
 
 function CheckIcon() {

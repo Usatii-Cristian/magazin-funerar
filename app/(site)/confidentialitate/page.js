@@ -1,8 +1,10 @@
 import { companyInfo } from "@/lib/data";
 
 export const metadata = {
-  title: "Politica de confidențialitate — PrimNord Granit",
+  title: "Politica de confidențialitate",
   description: "Politica de confidențialitate și prelucrare a datelor personale pe site-ul PrimNord Granit.",
+  alternates: { canonical: "/confidentialitate" },
+  robots: { index: false, follow: true },
 };
 
 export default function PrivacyPage() {

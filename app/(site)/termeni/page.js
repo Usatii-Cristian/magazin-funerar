@@ -1,8 +1,10 @@
 import { companyInfo } from "@/lib/data";
 
 export const metadata = {
-  title: "Termeni și condiții — PrimNord Granit",
+  title: "Termeni și condiții",
   description: "Termenii și condițiile de utilizare ale site-ului PrimNord Granit.",
+  alternates: { canonical: "/termeni" },
+  robots: { index: false, follow: true },
 };
 
 export default function TermsPage() {

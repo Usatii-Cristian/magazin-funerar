@@ -4,9 +4,17 @@ import ProductsClient from "./ProductsClient";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Monumente Funerare — PrimNord Granit",
+  title: "Monumente Funerare din Granit și Marmură",
   description:
-    "Monumente, cruci, sicrie și accesorii funerare din granit și marmură. Personalizate și montate profesionist.",
+    "Catalog complet de monumente funerare, cruci, sicrie, coroane și accesorii din granit și marmură. Personalizate, gravate și montate profesionist în toată Moldova.",
+  alternates: { canonical: "/produse" },
+  openGraph: {
+    title: "Monumente Funerare din Granit și Marmură | PrimNord Granit",
+    description:
+      "Catalog complet de monumente funerare, cruci, sicrie, coroane și accesorii din granit și marmură.",
+    url: "/produse",
+    type: "website",
+  },
 };
 
 export default async function ProductsPage({ searchParams }) {

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -12,9 +13,26 @@ export async function generateMetadata({ params }) {
     post = await prisma.blogPost.findUnique({ where: { slug } });
   } catch {}
   if (!post) return { title: "Articol negăsit" };
+  const url = `/blog/${post.slug}`;
   return {
-    title: `${post.title} — PrimNord Granit`,
+    title: post.title,
     description: post.excerpt || undefined,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${post.title} | ${SITE_NAME}`,
+      description: post.excerpt || undefined,
+      url,
+      type: "article",
+      publishedTime: post.createdAt?.toISOString?.() || undefined,
+      modifiedTime: post.updatedAt?.toISOString?.() || undefined,
+      images: post.coverImage ? [{ url: post.coverImage, alt: post.title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt || undefined,
+      images: post.coverImage ? [post.coverImage] : undefined,
+    },
   };
 }
 
@@ -28,8 +46,43 @@ export default async function BlogPostPage({ params }) {
 
   if (!post || !post.published) notFound();
 
+  const articleUrl = `${SITE_URL}/blog/${post.slug}`;
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${articleUrl}#article`,
+    headline: post.title,
+    description: post.excerpt || undefined,
+    image: post.coverImage || undefined,
+    datePublished: post.createdAt?.toISOString?.() || undefined,
+    dateModified: post.updatedAt?.toISOString?.() || undefined,
+    author: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
+    inLanguage: "ro-RO",
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 3, name: post.title, item: articleUrl },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-cream-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Cover image */}
       {post.coverImage && (
         <div className="relative h-64 w-full overflow-hidden bg-stone-900 sm:h-80 lg:h-96">

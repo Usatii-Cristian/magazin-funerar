@@ -6,6 +6,20 @@ import QuickQuote from "@/components/QuickQuote";
 
 export const revalidate = 60;
 
+export const metadata = {
+  title: { absolute: "PrimNord Granit — Servicii Funerare & Monumente din Granit" },
+  description:
+    "Servicii funerare complete și monumente funerare din granit și marmură. Peste 15 ani de experiență, disponibili 24/7 în toată Republica Moldova. Comanda online sau sunați 079 175 383.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "PrimNord Granit — Servicii Funerare & Monumente din Granit",
+    description:
+      "Servicii funerare complete și monumente din granit. Peste 15 ani de experiență, disponibili 24/7.",
+    url: "/",
+    type: "website",
+  },
+};
+
 function ServiceIcon({ icon }) {
   if (icon === "ceremony")
     return (

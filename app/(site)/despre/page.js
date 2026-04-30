@@ -2,9 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Despre noi — PrimNord Granit",
+  title: "Despre noi — Peste 15 Ani de Experiență",
   description:
-    "Despre PrimNord Granit — valorile, misiunea și experiența noastră de peste 15 ani.",
+    "PrimNord Granit — peste 15 ani de experiență în servicii funerare și monumente din granit. Valorile, misiunea și echipa noastră dedicată familiei dumneavoastră.",
+  alternates: { canonical: "/despre" },
+  openGraph: {
+    title: "Despre PrimNord Granit — Peste 15 Ani de Experiență",
+    description:
+      "Peste 15 ani de experiență în servicii funerare și monumente din granit.",
+    url: "/despre",
+    type: "website",
+  },
 };
 
 const values = [

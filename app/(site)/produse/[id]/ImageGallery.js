@@ -302,6 +302,7 @@ export default function ImageGallery({ images: rawImages, name, children }) {
                 fill
                 draggable={false}
                 className="pointer-events-none object-contain"
+                sizes="(max-width: 1024px) 100vw, 80vw"
                 priority
               />
             </div>
@@ -323,7 +324,7 @@ export default function ImageGallery({ images: rawImages, name, children }) {
                       : "opacity-50 hover:opacity-80"
                   }`}
                 >
-                  <Image src={img} alt="" fill className="object-cover" sizes="48px" />
+                  <Image src={img} alt={`${name} ${i + 1}`} fill className="object-cover" sizes="48px" />
                 </button>
               ))}
             </div>

@@ -28,7 +28,7 @@ export default function Navbar() {
             alt="PrimNord Granit"
             width={48}
             height={48}
-            unoptimized
+            priority
             className="rounded-sm"
           />
           <span className="font-display text-base font-semibold leading-tight text-white">

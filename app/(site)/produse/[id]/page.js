@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getProductById, getSimilarProducts } from "@/lib/db";
 import { products as staticProducts } from "@/lib/data";
 import { slugify } from "@/lib/slugify";
+import { SITE_URL, SITE_NAME, ORG_PHONE } from "@/lib/site";
 import ImageGallery from "./ImageGallery";
 
 export const revalidate = 60;
@@ -41,14 +42,26 @@ function formatPrice(n) {
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const product = await getCachedProduct(id);
-  if (!product) return {};
+  if (!product) return { title: "Produs negăsit" };
+  const slug = product.slug || product.id;
+  const url = `/produse/${slug}`;
+  const desc = (product.description || "").slice(0, 160);
   return {
-    title: `${product.name} — PrimNord Granit`,
-    description: product.description,
+    title: product.name,
+    description: desc || `${product.name} — ${product.material}, ${product.category}.`,
+    alternates: { canonical: url },
     openGraph: {
-      title: `${product.name} — PrimNord Granit`,
-      description: product.description,
-      images: product.image ? [{ url: product.image }] : [],
+      title: `${product.name} | ${SITE_NAME}`,
+      description: desc,
+      url,
+      type: "website",
+      images: product.image ? [{ url: product.image, alt: product.name }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: desc,
+      images: product.image ? [product.image] : undefined,
     },
   };
 }
@@ -66,8 +79,62 @@ export default async function ProductPage({ params }) {
   const similar = await getSimilarProducts(product.category, product.id);
   const badgeClass = categoryBadge[product.category] ?? "bg-stone-100 text-stone-700";
 
+  const slug = product.slug || product.id;
+  const productUrl = `${SITE_URL}/produse/${slug}`;
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${productUrl}#product`,
+    name: product.name,
+    description: product.description,
+    sku: product.id,
+    image: (product.images && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : []
+    ).filter(Boolean),
+    category: product.category,
+    material: product.material,
+    brand: { "@type": "Brand", name: SITE_NAME },
+    offers: {
+      "@type": "Offer",
+      url: productUrl,
+      priceCurrency: "MDL",
+      price: product.price,
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@type": "Organization", name: SITE_NAME },
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Monumente Funerare", item: `${SITE_URL}/produse` },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.category,
+        item: `${SITE_URL}/produse?categoria=${encodeURIComponent(product.category)}`,
+      },
+      { "@type": "ListItem", position: 4, name: product.name, item: productUrl },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Hero image with lightbox ─────────────────────────── */}
       <ImageGallery images={product.images} name={product.name}>
         {/* Back link */}
