@@ -1,4 +1,6 @@
 import { Lora, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const lora = Lora({
@@ -24,6 +26,8 @@ export default function RootLayout({ children }) {
     <html lang="ro" className={`${lora.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col bg-cream-50 text-stone-900 antialiased">
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
