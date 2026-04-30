@@ -30,10 +30,11 @@ export default function PaginationBar({ currentPage, totalPages }) {
     withGaps.push(pages[i]);
   }
 
-  const btnBase = "flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg px-3 text-sm transition";
+  const btnBase = "flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg px-3 text-sm transition";
 
   return (
-    <nav aria-label="Paginare" className="mt-8 flex items-center justify-center gap-1">
+    <nav aria-label="Paginare" className="mt-8 overflow-x-auto">
+    <div className="flex min-w-max items-center justify-center gap-1 px-2">
       <Link
         href={pageHref(currentPage - 1)}
         aria-disabled={currentPage === 1}
@@ -77,6 +78,7 @@ export default function PaginationBar({ currentPage, totalPages }) {
       >
         →
       </Link>
+    </div>
     </nav>
   );
 }

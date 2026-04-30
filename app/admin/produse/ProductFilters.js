@@ -43,11 +43,12 @@ export default function ProductFilters({ total }) {
   const hasFilters = category || featured;
 
   return (
-    <div className="mb-5 flex flex-wrap items-center gap-2">
+    <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+      {/* Category select — full width on mobile, auto on desktop */}
       <select
         value={category}
         onChange={(e) => update({ category: e.target.value })}
-        className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-300"
+        className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-300 sm:w-auto sm:py-2"
       >
         <option value="">Toate categoriile</option>
         {CATEGORIES.map((c) => (
@@ -57,27 +58,36 @@ export default function ProductFilters({ total }) {
         ))}
       </select>
 
-      <button
-        onClick={() => update({ featured: featured ? "" : "1" })}
-        className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-          featured
-            ? "border-gold-500 bg-gold-50 text-gold-700"
-            : "border-stone-200 bg-white text-stone-600 hover:bg-stone-50"
-        }`}
-      >
-        ★ Recomandate
-      </button>
-
-      {hasFilters && (
+      {/* Buttons row + count (mobile: same row; desktop: inline) */}
+      <div className="flex items-center gap-2">
         <button
-          onClick={() => update({ category: "", featured: "" })}
-          className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-400 transition hover:text-stone-600"
+          onClick={() => update({ featured: featured ? "" : "1" })}
+          className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition sm:py-2 ${
+            featured
+              ? "border-gold-500 bg-gold-50 text-gold-700"
+              : "border-stone-200 bg-white text-stone-600 hover:bg-stone-50"
+          }`}
         >
-          × Șterge filtre
+          ★ Recomandate
         </button>
-      )}
 
-      <span className="ml-auto text-sm text-stone-400">
+        {hasFilters && (
+          <button
+            onClick={() => update({ category: "", featured: "" })}
+            className="rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-400 transition hover:text-stone-600 sm:py-2"
+          >
+            × Șterge
+          </button>
+        )}
+
+        {/* Count shown inline on mobile (end of button row) */}
+        <span className="ml-auto text-sm text-stone-400 sm:hidden">
+          {total} {total === 1 ? "produs" : "produse"}
+        </span>
+      </div>
+
+      {/* Count shown at far right on desktop */}
+      <span className="hidden text-sm text-stone-400 sm:ml-auto sm:block">
         {total} {total === 1 ? "produs" : "produse"}
       </span>
     </div>
