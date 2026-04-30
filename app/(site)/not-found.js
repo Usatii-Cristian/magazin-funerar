@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Pagina nu a fost găsită — PrimNord Granit",
+  title: "Pagina nu a fost găsită",
+  robots: { index: false, follow: false },
 };
 
 export default function NotFound() {

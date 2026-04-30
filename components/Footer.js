@@ -8,14 +8,9 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="mb-3 flex flex-col leading-none">
-              <span className="font-display text-lg font-semibold text-white">
-                PrimNord
-              </span>
-              <span className="text-xs tracking-[0.2em] text-gold-400 uppercase">
-                Granit
-              </span>
-            </div>
+            <span className="mb-3 block font-display text-lg font-semibold leading-none text-white">
+              PrimNord<span className="text-gold-400">-Granit</span>
+            </span>
             <p className="max-w-xs text-sm leading-relaxed">
               {companyInfo.description}
             </p>
@@ -30,6 +25,7 @@ export default function Footer() {
               {[
                 { href: "/servicii", label: "Servicii" },
                 { href: "/produse", label: "Monumente" },
+                { href: "/blog", label: "Blog" },
                 { href: "/despre", label: "Despre noi" },
                 { href: "/contact", label: "Contact" },
               ].map((l) => (

@@ -5,7 +5,8 @@ import Link from "next/link";
 // app/(site)/not-found.js — that's what visitors normally see.
 
 export const metadata = {
-  title: "Pagina nu a fost găsită — PrimNord Granit",
+  title: "Pagina nu a fost găsită",
+  robots: { index: false, follow: false },
 };
 
 export default function NotFound() {

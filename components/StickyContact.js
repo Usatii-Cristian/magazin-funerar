@@ -206,7 +206,7 @@ export default function StickyContact() {
       </div>
 
       {/* Spacer so mobile content isn't hidden by the bar */}
-      <div className="h-14 md:hidden" aria-hidden="true" />
+      <div className="h-16 md:hidden" aria-hidden="true" />
     </>
   );
 }

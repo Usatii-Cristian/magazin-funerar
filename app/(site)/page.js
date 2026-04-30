@@ -135,8 +135,8 @@ export default async function HomePage() {
                   alt="PrimNord Granit"
                   fill
                   className="object-cover brightness-75 transition-transform duration-700 hover:scale-105"
-                  sizes="25vw"
-                  priority={i < 2}
+                  sizes="(max-width: 1024px) 0px, 25vw"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-stone-950/20" />
               </div>

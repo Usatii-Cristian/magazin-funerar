@@ -4,7 +4,7 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -131,8 +131,8 @@ export default async function BlogPostPage({ params }) {
         <hr className="my-8 border-stone-200" />
 
         {/* Article body */}
-        <div
-          className="prose prose-stone max-w-none prose-headings:font-display prose-a:text-gold-600 prose-a:no-underline hover:prose-a:underline"
+        <article
+          className="article-body"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
