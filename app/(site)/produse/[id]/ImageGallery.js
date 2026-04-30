@@ -1,67 +1,95 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import Image from "next/image";
 
 export default function ImageGallery({ images: rawImages, name, children }) {
   const images = (rawImages ?? []).filter(
     (s) => typeof s === "string" && s.length > 0
   );
+
   const [lightboxIndex, setLightboxIndex] = useState(null);
-  const [scale, setScale] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [zoomedIn, setZoomedIn] = useState(false);
+  const [, startTransition] = useTransition();
+
+  // Refs for real-time gesture values — no React re-render on every frame
+  const scaleRef = useRef(1);
+  const offsetRef = useRef({ x: 0, y: 0 });
   const pinchRef = useRef({ dist: null, scale: 1 });
   const dragRef = useRef({ active: false, startX: 0, startY: 0, startOffX: 0, startOffY: 0, moved: false });
+  const transformWrapperRef = useRef(null);
+  const lightboxIndexRef = useRef(null);
+  lightboxIndexRef.current = lightboxIndex;
 
+  // Apply CSS transform directly — bypasses React render cycle entirely
+  function applyTransform(x, y, s, animated = false) {
+    const el = transformWrapperRef.current;
+    if (!el) return;
+    el.style.transition = animated ? "transform 0.2s ease" : "none";
+    el.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+  }
+
+  // Body scroll lock
   useEffect(() => {
-    if (lightboxIndex !== null) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = lightboxIndex !== null ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [lightboxIndex]);
 
+  // Reset transform when image changes — runs after mount so ref is available
   useEffect(() => {
-    setScale(1);
-    setOffset({ x: 0, y: 0 });
+    scaleRef.current = 1;
+    offsetRef.current = { x: 0, y: 0 };
+    if (transformWrapperRef.current) {
+      transformWrapperRef.current.style.transition = "none";
+      transformWrapperRef.current.style.transform = "translate(0px,0px) scale(1)";
+    }
+    setZoomedIn(false);
+    setIsDragging(false);
   }, [lightboxIndex]);
 
+  // Keyboard nav — registered once; reads current index from ref to avoid re-registering
   useEffect(() => {
     function onKey(e) {
-      if (lightboxIndex === null) return;
+      const idx = lightboxIndexRef.current;
+      if (idx === null) return;
       if (e.key === "Escape") setLightboxIndex(null);
-      if (e.key === "ArrowLeft" && lightboxIndex > 0)
-        setLightboxIndex((i) => i - 1);
-      if (e.key === "ArrowRight" && lightboxIndex < images.length - 1)
-        setLightboxIndex((i) => i + 1);
+      if (e.key === "ArrowLeft" && idx > 0)
+        startTransition(() => setLightboxIndex((i) => i - 1));
+      if (e.key === "ArrowRight" && idx < images.length - 1)
+        startTransition(() => setLightboxIndex((i) => i + 1));
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [lightboxIndex, images.length]);
+  }, [images.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Pinch zoom (touch)
+  // ── Pinch-to-zoom (touch) ──────────────────────────────────────────────────
   function getPinchDist(e) {
     const [a, b] = e.touches;
     return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
   }
+
   function onTouchStart(e) {
     if (e.touches.length === 2) {
-      pinchRef.current = { dist: getPinchDist(e), scale };
+      pinchRef.current = { dist: getPinchDist(e), scale: scaleRef.current };
     }
-  }
-  function onTouchMove(e) {
-    if (e.touches.length === 2 && pinchRef.current.dist !== null) {
-      const ratio = getPinchDist(e) / pinchRef.current.dist;
-      setScale(Math.min(4, Math.max(1, pinchRef.current.scale * ratio)));
-    }
-  }
-  function onTouchEnd() {
-    pinchRef.current.dist = null;
   }
 
-  // Mouse drag-to-pan
+  function onTouchMove(e) {
+    if (e.touches.length !== 2 || pinchRef.current.dist === null) return;
+    const ratio = getPinchDist(e) / pinchRef.current.dist;
+    const newScale = Math.min(4, Math.max(1, pinchRef.current.scale * ratio));
+    scaleRef.current = newScale;
+    // Direct DOM — no setState, no re-render
+    applyTransform(offsetRef.current.x, offsetRef.current.y, newScale);
+  }
+
+  function onTouchEnd() {
+    pinchRef.current.dist = null;
+    setZoomedIn(scaleRef.current > 1); // one setState only at gesture end
+  }
+
+  // ── Mouse drag-to-pan ──────────────────────────────────────────────────────
   function onMouseDown(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -69,20 +97,24 @@ export default function ImageGallery({ images: rawImages, name, children }) {
       active: true,
       startX: e.clientX,
       startY: e.clientY,
-      startOffX: offset.x,
-      startOffY: offset.y,
+      startOffX: offsetRef.current.x,
+      startOffY: offsetRef.current.y,
       moved: false,
     };
-    if (scale > 1) setIsDragging(true);
+    if (scaleRef.current > 1) setIsDragging(true);
   }
 
   function onMouseMove(e) {
     const d = dragRef.current;
-    if (!d.active || scale <= 1) return;
+    if (!d.active || scaleRef.current <= 1) return;
     const dx = e.clientX - d.startX;
     const dy = e.clientY - d.startY;
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) d.moved = true;
-    setOffset({ x: d.startOffX + dx, y: d.startOffY + dy });
+    const newX = d.startOffX + dx;
+    const newY = d.startOffY + dy;
+    offsetRef.current = { x: newX, y: newY };
+    // Direct DOM — no setState, no re-render
+    applyTransform(newX, newY, scaleRef.current);
   }
 
   function onMouseUp() {
@@ -92,11 +124,15 @@ export default function ImageGallery({ images: rawImages, name, children }) {
     dragRef.current.moved = false;
     setIsDragging(false);
     if (!moved) {
-      if (scale > 1) {
-        setScale(1);
-        setOffset({ x: 0, y: 0 });
+      if (scaleRef.current > 1) {
+        scaleRef.current = 1;
+        offsetRef.current = { x: 0, y: 0 };
+        applyTransform(0, 0, 1, true);
+        setZoomedIn(false);
       } else {
-        setScale(2);
+        scaleRef.current = 2;
+        applyTransform(0, 0, 2, true);
+        setZoomedIn(true);
       }
     }
   }
@@ -110,26 +146,22 @@ export default function ImageGallery({ images: rawImages, name, children }) {
   }
 
   const hasImages = images.length > 0;
-  const mainImage = images[0];
-  const galleryImages = images.slice(1);
-
-  const imgCursor =
-    scale > 1
-      ? isDragging
-        ? "cursor-grabbing"
-        : "cursor-grab"
-      : "cursor-zoom-in";
+  const imgCursor = zoomedIn
+    ? isDragging ? "cursor-grabbing" : "cursor-grab"
+    : "cursor-zoom-in";
 
   return (
     <>
-      {/* Hero image — clickable */}
+      {/* Hero image */}
       <div
-        className={`relative h-[55vh] min-h-[360px] w-full overflow-hidden lg:max-h-[520px] ${hasImages ? "cursor-zoom-in bg-stone-900" : "bg-stone-800"}`}
+        className={`relative h-[55vh] min-h-[360px] w-full overflow-hidden lg:max-h-[520px] ${
+          hasImages ? "cursor-zoom-in bg-stone-900" : "bg-stone-800"
+        }`}
         onClick={() => hasImages && setLightboxIndex(0)}
       >
         {hasImages ? (
           <Image
-            src={mainImage}
+            src={images[0]}
             alt={name}
             fill
             className="object-cover"
@@ -145,7 +177,6 @@ export default function ImageGallery({ images: rawImages, name, children }) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-900/40 to-stone-900/10" />
 
-        {/* Zoom hint */}
         {hasImages && (
           <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm">
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -155,14 +186,13 @@ export default function ImageGallery({ images: rawImages, name, children }) {
           </div>
         )}
 
-        {/* Overlay content — stop propagation so clicks don't open lightbox */}
         <div onClick={(e) => e.stopPropagation()} className="contents">
           {children}
         </div>
       </div>
 
       {/* Gallery thumbnails */}
-      {galleryImages.length > 0 && (
+      {images.length > 1 && (
         <div className="mx-auto mt-10 max-w-6xl px-6">
           <h3 className="mb-4 font-display text-lg font-semibold text-stone-900">
             Galerie foto
@@ -201,13 +231,13 @@ export default function ImageGallery({ images: rawImages, name, children }) {
           onClick={() => setLightboxIndex(null)}
         >
           {/* Counter */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-white/80">
+          <div className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-white/80">
             {lightboxIndex + 1} / {images.length}
           </div>
 
-          {/* Zoom/pan hint */}
-          <div className="absolute top-4 right-16 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/60">
-            {scale > 1 ? `${Math.round(scale * 100)}% — trageți pentru a muta` : "Click pentru zoom"}
+          {/* Zoom hint */}
+          <div className="absolute right-16 top-4 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/60">
+            {zoomedIn ? "Trageți pentru a muta" : "Click / pinch pentru zoom"}
           </div>
 
           {/* Close */}
@@ -224,8 +254,8 @@ export default function ImageGallery({ images: rawImages, name, children }) {
           {/* Prev */}
           {lightboxIndex > 0 && (
             <button
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20"
-              onClick={(e) => { e.stopPropagation(); setLightboxIndex((i) => i - 1); }}
+              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20"
+              onClick={(e) => { e.stopPropagation(); startTransition(() => setLightboxIndex((i) => i - 1)); }}
               aria-label="Anterior"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -237,8 +267,8 @@ export default function ImageGallery({ images: rawImages, name, children }) {
           {/* Next */}
           {lightboxIndex < images.length - 1 && (
             <button
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20"
-              onClick={(e) => { e.stopPropagation(); setLightboxIndex((i) => i + 1); }}
+              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20"
+              onClick={(e) => { e.stopPropagation(); startTransition(() => setLightboxIndex((i) => i + 1)); }}
               aria-label="Următor"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -247,9 +277,9 @@ export default function ImageGallery({ images: rawImages, name, children }) {
             </button>
           )}
 
-          {/* Image — click to zoom, drag to pan when zoomed */}
+          {/* Image + gesture surface */}
           <div
-            className={`relative h-full w-full max-w-5xl p-4 overflow-hidden select-none ${imgCursor}`}
+            className={`relative h-full w-full max-w-5xl select-none overflow-hidden p-4 ${imgCursor}`}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
@@ -260,19 +290,21 @@ export default function ImageGallery({ images: rawImages, name, children }) {
             onTouchEnd={onTouchEnd}
             style={{ touchAction: "none" }}
           >
-            <Image
-              src={images[lightboxIndex]}
-              alt={`${name} ${lightboxIndex + 1}`}
-              fill
-              draggable={false}
-              className="object-contain pointer-events-none"
-              style={{
-                transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-                transformOrigin: "center center",
-                transition: isDragging ? "none" : "transform 0.2s ease",
-              }}
-              priority
-            />
+            {/* Transform target — mutated directly, never via setState */}
+            <div
+              ref={transformWrapperRef}
+              className="absolute inset-0"
+              style={{ transform: "translate(0px,0px) scale(1)", willChange: "transform" }}
+            >
+              <Image
+                src={images[lightboxIndex]}
+                alt={`${name} ${lightboxIndex + 1}`}
+                fill
+                draggable={false}
+                className="pointer-events-none object-contain"
+                priority
+              />
+            </div>
           </div>
 
           {/* Thumbnail strip */}
@@ -281,10 +313,13 @@ export default function ImageGallery({ images: rawImages, name, children }) {
               {images.map((img, i) => (
                 <button
                   key={i}
-                  onClick={(e) => { e.stopPropagation(); setLightboxIndex(i); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startTransition(() => setLightboxIndex(i));
+                  }}
                   className={`relative h-12 w-12 overflow-hidden rounded transition-all ${
                     i === lightboxIndex
-                      ? "ring-2 ring-white opacity-100"
+                      ? "opacity-100 ring-2 ring-white"
                       : "opacity-50 hover:opacity-80"
                   }`}
                 >
