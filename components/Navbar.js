@@ -9,6 +9,7 @@ const links = [
   { href: "/", label: "Acasă" },
   { href: "/servicii", label: "Servicii" },
   { href: "/produse", label: "Monumente" },
+  { href: "/blog", label: "Blog" },
   { href: "/despre", label: "Despre noi" },
   { href: "/contact", label: "Contact" },
 ];
@@ -21,15 +22,18 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-stone-950 shadow-lg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
         {/* Logo */}
-        <Link href="/" onClick={() => setOpen(false)} className="shrink-0">
+        <Link href="/" onClick={() => setOpen(false)} className="flex shrink-0 items-center gap-3">
           <Image
             src="/logo.png"
             alt="PrimNord Granit"
-            width={88}
-            height={88}
+            width={48}
+            height={48}
             unoptimized
             className="rounded-sm"
           />
+          <span className="font-display text-base font-semibold leading-tight text-white">
+            PrimNord<span className="text-gold-400">-Granit</span>
+          </span>
         </Link>
 
         {/* Desktop nav */}
