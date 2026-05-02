@@ -3,6 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+function getSafeNextParam() {
+  if (typeof window === "undefined") return null;
+  try {
+    const next = new URLSearchParams(window.location.search).get("next");
+    return next && /^\/admin(\/|$)/.test(next) ? next : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -21,7 +31,7 @@ export default function AdminLogin() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Eroare la autentificare");
-      router.push("/admin/produse");
+      router.push(getSafeNextParam() || "/admin/produse");
     } catch (err) {
       setError(err.message);
     } finally {

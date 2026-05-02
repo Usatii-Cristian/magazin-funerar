@@ -37,10 +37,12 @@ export async function proxy(request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const url = request.nextUrl.clone();
-  url.pathname = "/admin/login";
-  url.search = "";
-  const res = NextResponse.redirect(url);
+  const original = pathname + (request.nextUrl.search || "");
+  const loginUrl = new URL("/admin/login", request.url);
+  if (original.startsWith("/admin")) {
+    loginUrl.searchParams.set("next", original);
+  }
+  const res = NextResponse.redirect(loginUrl);
   res.cookies.delete("admin-token");
   return res;
 }
