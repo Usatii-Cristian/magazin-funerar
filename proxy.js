@@ -1,30 +1,50 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || "primnord-fallback-secret-change-me"
-);
+const FALLBACK = "primnord-fallback-secret-change-me";
+const JWT_SECRET = process.env.JWT_SECRET || FALLBACK;
+const isProd = process.env.NODE_ENV === "production";
+const secretBytes = new TextEncoder().encode(JWT_SECRET);
+
+async function isAuthed(request) {
+  if (isProd && JWT_SECRET === FALLBACK) return false;
+  const token = request.cookies.get("admin-token")?.value;
+  if (!token) return false;
+  try {
+    await jwtVerify(token, secretBytes);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function proxy(request) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
-    const token = request.cookies.get("admin-token")?.value;
-    if (!token) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
-    }
-    try {
-      await jwtVerify(token, secret);
-    } catch {
-      const res = NextResponse.redirect(new URL("/admin/login", request.url));
-      res.cookies.delete("admin-token");
-      return res;
-    }
+  const isLoginPage = pathname === "/admin/login";
+  const isAuthApi =
+    pathname === "/api/auth/login" || pathname === "/api/auth/logout";
+  if (isLoginPage || isAuthApi) return NextResponse.next();
+
+  const isAdminUi = pathname.startsWith("/admin");
+  const isAdminApi = pathname.startsWith("/api/admin");
+  if (!isAdminUi && !isAdminApi) return NextResponse.next();
+
+  const ok = await isAuthed(request);
+  if (ok) return NextResponse.next();
+
+  if (isAdminApi) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.next();
+  const url = request.nextUrl.clone();
+  url.pathname = "/admin/login";
+  url.search = "";
+  const res = NextResponse.redirect(url);
+  res.cookies.delete("admin-token");
+  return res;
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

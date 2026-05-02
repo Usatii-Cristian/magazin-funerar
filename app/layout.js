@@ -10,6 +10,7 @@ import {
   ORG_LOCALE,
   ORG_COUNTRY,
 } from "@/lib/site";
+import { safeJsonLd } from "@/lib/jsonLd";
 import "./globals.css";
 
 const lora = Lora({
@@ -170,11 +171,11 @@ export default function RootLayout({ children }) {
         {children}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationJsonLd) }}
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(websiteJsonLd) }}
         />
         <Analytics />
         <SpeedInsights />

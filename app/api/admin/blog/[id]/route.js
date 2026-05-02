@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { sanitizeArticleHtml } from "@/lib/sanitize";
+
+const MAX_TITLE = 200;
+const MAX_EXCERPT = 500;
+const MAX_CONTENT = 200_000;
+const MAX_COVER = 2000;
 
 function toSlug(title) {
   return title
@@ -39,24 +45,43 @@ export async function PUT(request, { params }) {
   const { id } = await params;
   try {
     const data = await request.json();
-    if (!data.title || !data.content) {
+    const title = typeof data.title === "string" ? data.title.trim() : "";
+    const content = typeof data.content === "string" ? data.content : "";
+    const excerpt = typeof data.excerpt === "string" ? data.excerpt.trim() : "";
+    const coverImage =
+      typeof data.coverImage === "string" && data.coverImage.trim()
+        ? data.coverImage.trim()
+        : null;
+
+    if (!title || !content) {
       return NextResponse.json(
         { error: "Titlul și conținutul sunt obligatorii" },
         { status: 400 }
       );
     }
+    if (
+      title.length > MAX_TITLE ||
+      excerpt.length > MAX_EXCERPT ||
+      content.length > MAX_CONTENT ||
+      (coverImage && coverImage.length > MAX_COVER)
+    ) {
+      return NextResponse.json({ error: "Conținut prea lung" }, { status: 400 });
+    }
+    if (coverImage && !/^(https?:\/\/|\/)/.test(coverImage)) {
+      return NextResponse.json({ error: "URL imagine invalid" }, { status: 400 });
+    }
 
-    const slug = await uniqueSlug(data.title, id);
+    const slug = await uniqueSlug(title, id);
 
     const post = await prisma.blogPost.update({
       where: { id },
       data: {
-        title: data.title,
+        title,
         slug,
-        excerpt: data.excerpt || "",
-        content: data.content,
-        coverImage: data.coverImage || null,
-        published: data.published ?? false,
+        excerpt,
+        content: sanitizeArticleHtml(content),
+        coverImage,
+        published: data.published === true,
       },
     });
 

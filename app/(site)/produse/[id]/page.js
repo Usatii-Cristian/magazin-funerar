@@ -6,6 +6,7 @@ import { getProductById, getSimilarProducts } from "@/lib/db";
 import { products as staticProducts } from "@/lib/data";
 import { slugify } from "@/lib/slugify";
 import { SITE_URL, SITE_NAME, ORG_PHONE } from "@/lib/site";
+import { safeJsonLd } from "@/lib/jsonLd";
 import ImageGallery from "./ImageGallery";
 
 export const revalidate = 60;
@@ -129,11 +130,11 @@ export default async function ProductPage({ params }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(productJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       {/* ── Hero image with lightbox ─────────────────────────── */}
       <ImageGallery images={product.images} name={product.name}>

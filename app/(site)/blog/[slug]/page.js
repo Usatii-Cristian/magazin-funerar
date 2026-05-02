@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { sanitizeArticleHtml } from "@/lib/sanitize";
+import { safeJsonLd } from "@/lib/jsonLd";
 
 export const revalidate = 60;
 
@@ -77,11 +79,11 @@ export default async function BlogPostPage({ params }) {
     <div className="min-h-screen bg-cream-50">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(articleJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       {/* Cover image */}
       {post.coverImage && (
@@ -133,7 +135,7 @@ export default async function BlogPostPage({ params }) {
         {/* Article body */}
         <article
           className="article-body"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(post.content) }}
         />
 
         <hr className="my-10 border-stone-200" />
