@@ -32,13 +32,14 @@ export async function POST(request) {
 
     if (!LABELS[action]) return NextResponse.json({ ok: true });
 
-    const isFinal = action === "livrat" || action === "nelivrat";
     const validId = msgId && msgId !== "x" && /^[a-f0-9]{24}$/.test(msgId);
 
     if (!validId) {
-      // No DB row to look up — derive new state purely from action.
+      // No DB row to look up — derive new state purely from action, preserving
+      // the unrelated axis as "—" since we have no record of it.
       const newRead = action === "contactat" ? true : action === "necontactat" ? false : undefined;
       const newDelivered = action === "livrat" ? true : action === "nelivrat" ? false : undefined;
+      const isFinal = newDelivered === true;
       const oldText = message.text ?? "";
       const headerEnd = oldText.indexOf("\n\n");
       const body = headerEnd >= 0 ? oldText.slice(headerEnd) : `\n\n${oldText}`;
@@ -57,9 +58,7 @@ export async function POST(request) {
           chat.id,
           message_id,
           newText,
-          isFinal
-            ? { inline_keyboard: [] }
-            : buildKeyboard(msgId, action === "contactat")
+          buildKeyboard(msgId, { read: newRead, delivered: newDelivered })
         ),
       ]);
       return NextResponse.json({ ok: true });
@@ -74,6 +73,8 @@ export async function POST(request) {
       }),
     ]);
 
+    const isFinal = updated.delivered === true;
+
     const text = buildMessageText({
       name: updated.name,
       phone: updated.phone,
@@ -84,9 +85,10 @@ export async function POST(request) {
       isFinal,
     });
 
-    const keyboard = isFinal
-      ? { inline_keyboard: [] }
-      : buildKeyboard(msgId, updated.read);
+    const keyboard = buildKeyboard(msgId, {
+      read: updated.read,
+      delivered: updated.delivered,
+    });
 
     const stored = updated.telegramMessages ?? [];
 

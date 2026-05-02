@@ -6,7 +6,6 @@ async function syncTelegram(updated) {
   const stored = updated.telegramMessages;
   if (!Array.isArray(stored) || !stored.length) return;
 
-  // When buttons hide (delivered), the message is "finalizat"
   const isFinal = updated.delivered === true;
 
   const text = buildMessageText({
@@ -19,9 +18,10 @@ async function syncTelegram(updated) {
     isFinal,
   });
 
-  const keyboard = isFinal
-    ? { inline_keyboard: [] }
-    : buildKeyboard(updated.id, updated.read);
+  const keyboard = buildKeyboard(updated.id, {
+    read: updated.read,
+    delivered: updated.delivered,
+  });
 
   await Promise.all(
     stored.map(({ chatId, msgId }) =>

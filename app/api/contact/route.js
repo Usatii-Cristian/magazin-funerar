@@ -13,7 +13,7 @@ export { buildKeyboard };
 
 async function sendTelegram({ name, phone, message, createdAt, dbMsgId }) {
   const text = buildMessageText({ name, phone, message, createdAt });
-  const keyboard = buildKeyboard(dbMsgId, undefined);
+  const keyboard = buildKeyboard(dbMsgId, { read: false, delivered: false });
   const results = await Promise.all(
     TELEGRAM_CHAT_IDS.map((id) => sendMessage(id, text, keyboard))
   );
