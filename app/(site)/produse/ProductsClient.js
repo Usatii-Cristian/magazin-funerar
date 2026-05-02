@@ -193,7 +193,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
               className="absolute inset-0 bg-black/50"
               onClick={() => setDrawerOpen(false)}
             />
-            <div className="absolute left-0 top-0 h-full w-72 overflow-y-auto bg-white p-6 shadow-xl">
+            <div className="absolute left-0 top-0 h-full w-[85vw] max-w-xs overflow-y-auto bg-white p-6 shadow-xl">
               <div className="mb-5 flex items-center justify-between">
                 <h3 className="font-display text-lg font-semibold text-stone-900">
                   Filtre
@@ -248,7 +248,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                 placeholder="Caută produs..."
                 value={search}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="w-full rounded-xl border border-stone-200 bg-white py-2.5 pl-9 pr-4 text-sm text-stone-700 shadow-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+                className="w-full rounded-xl border border-stone-200 bg-white py-2.5 pl-9 pr-4 text-base text-stone-700 shadow-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20 sm:text-sm"
               />
               {search && (
                 <button
@@ -284,7 +284,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
               </p>
             ) : (
               <>
-                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                   {displayed.map((p) => {
                     const pct = p.originalPrice
                       ? Math.round((1 - p.price / p.originalPrice) * 100)

@@ -37,7 +37,7 @@ export default function ContactPage() {
       {/* Main content */}
       <section className="bg-cream-50 px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <div className="grid gap-12 lg:grid-cols-2">
+          <div className="grid gap-12 md:grid-cols-2">
             {/* Contact info */}
             <div>
               <h2 className="mb-8 font-display text-2xl font-semibold text-stone-900">

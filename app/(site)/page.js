@@ -74,11 +74,11 @@ export default async function HomePage() {
         </div>
 
         {/* Left — text content */}
-        <div className="relative z-10 flex flex-1 flex-col justify-center px-8 py-20 lg:max-w-[52%] lg:px-16 lg:py-0 xl:px-24">
+        <div className="relative z-10 flex flex-1 flex-col justify-center px-6 py-16 sm:px-8 sm:py-20 lg:max-w-[52%] lg:px-16 lg:py-0 xl:px-24">
           <p className="mb-5 text-xs font-medium uppercase tracking-[0.3em] text-gold-400">
             Servicii funerare complete
           </p>
-          <h1 className="mb-6 font-display text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-5xl xl:text-6xl">
+          <h1 className="mb-6 font-display text-3xl font-semibold leading-tight text-white sm:text-5xl lg:text-5xl xl:text-6xl">
             Respect, Grijă și{" "}
             <span className="text-gold-400">Demnitate</span>{" "}
             în Momente Dificile
@@ -103,7 +103,7 @@ export default async function HomePage() {
           </div>
 
           {/* Stats */}
-          <div className="mt-14 flex gap-8 border-t border-stone-800 pt-8">
+          <div className="mt-14 flex gap-6 border-t border-stone-800 pt-8 sm:gap-8">
             {[
               { value: "15+", label: "Ani experiență" },
               { value: "24/7", label: "Disponibili" },

@@ -5,9 +5,9 @@ export default function Footer() {
   return (
     <footer className="bg-stone-900 text-stone-400">
       <div className="mx-auto max-w-6xl px-6 py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           {/* Brand */}
-          <div className="lg:col-span-2">
+          <div className="sm:col-span-2 md:col-span-2">
             <span className="mb-3 block font-display text-lg font-semibold leading-none text-white">
               PrimNord<span className="text-gold-400">-Granit</span>
             </span>

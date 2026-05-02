@@ -135,7 +135,7 @@ export default function ContactForm() {
           value={form.name}
           onChange={handleChange}
           placeholder="Introduceți numele"
-          className="w-full cursor-text caret-stone-900 rounded-lg border border-stone-200 bg-cream-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+          className="w-full cursor-text caret-stone-900 rounded-lg border border-stone-200 bg-cream-50 px-4 py-3 text-base text-stone-900 placeholder-stone-400 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20 sm:text-sm"
         />
       </div>
 
@@ -153,7 +153,7 @@ export default function ContactForm() {
           value={form.phone}
           onChange={handleChange}
           placeholder="Ex: 07XX XXX XXX"
-          className="w-full cursor-text caret-stone-900 rounded-lg border border-stone-200 bg-cream-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
+          className="w-full cursor-text caret-stone-900 rounded-lg border border-stone-200 bg-cream-50 px-4 py-3 text-base text-stone-900 placeholder-stone-400 outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20 sm:text-sm"
         />
       </div>
 

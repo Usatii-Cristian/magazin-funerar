@@ -37,7 +37,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center gap-4 md:flex lg:gap-7">
           {links.map((l) => (
             <Link
               key={l.href}
@@ -50,14 +50,14 @@ export default function Navbar() {
             >
               {l.label}
               {pathname === l.href && (
-                <span className="absolute -bottom-1 left-0 h-px w-full bg-gold-400" />
+                <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-gold-400" />
               )}
             </Link>
           ))}
         </nav>
 
-        {/* Desktop right: CTA */}
-        <div className="hidden items-center gap-4 md:flex">
+        {/* Desktop right: CTA — hidden on tablet to avoid cramming */}
+        <div className="hidden items-center gap-4 lg:flex">
           <Link
             href="/contact"
             className="rounded bg-gold-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-gold-600"
