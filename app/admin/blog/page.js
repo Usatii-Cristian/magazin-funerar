@@ -82,7 +82,7 @@ export default async function AdminBlogPage() {
                         ? "bg-emerald-50 text-emerald-700"
                         : "bg-stone-100 text-stone-500"
                     }`}>
-                      {post.published ? "Publicat" : "Ciornă"}
+                      {post.published ? "Publicat" : "Nepublicat"}
                     </span>
                   </td>
                   <td className="hidden px-4 py-3 text-xs text-stone-400 sm:table-cell">

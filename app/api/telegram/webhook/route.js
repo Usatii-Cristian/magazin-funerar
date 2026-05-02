@@ -36,13 +36,27 @@ export async function POST(request) {
     const validId = msgId && msgId !== "x" && /^[a-f0-9]{24}$/.test(msgId);
 
     if (!validId) {
-      // Best-effort: just clear keyboard on this single message
+      // No DB row to look up — derive new state purely from action.
+      const newRead = action === "contactat" ? true : action === "necontactat" ? false : undefined;
+      const newDelivered = action === "livrat" ? true : action === "nelivrat" ? false : undefined;
+      const oldText = message.text ?? "";
+      const headerEnd = oldText.indexOf("\n\n");
+      const body = headerEnd >= 0 ? oldText.slice(headerEnd) : `\n\n${oldText}`;
+      const header =
+        `📬 Mesaj nou de contact!\n` +
+        `📌 Status: ${
+          newRead === true ? "✅ Contactat" : newRead === false ? "❌ Necontactat" : "—"
+        } • ${
+          newDelivered === true ? "📦 Livrat" : newDelivered === false ? "⏳ Nelivrat" : "—"
+        }${isFinal ? " (finalizat)" : ""}`;
+      const newText = header + body;
+
       await Promise.all([
         answerCallback(callbackId, `Marcat: ${LABELS[action]}`),
         editMessage(
           chat.id,
           message_id,
-          message.text ?? "",
+          newText,
           isFinal
             ? { inline_keyboard: [] }
             : buildKeyboard(msgId, action === "contactat")

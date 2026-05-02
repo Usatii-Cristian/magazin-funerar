@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { sanitizeArticleHtml } from "@/lib/sanitize";
+import { renderArticleContent } from "@/lib/sanitize";
 
 const MAX_TITLE = 200;
 const MAX_EXCERPT = 500;
@@ -77,7 +77,7 @@ export async function POST(request) {
         title,
         slug,
         excerpt,
-        content: sanitizeArticleHtml(content),
+        content: renderArticleContent(content),
         coverImage,
         published: data.published === true,
       },

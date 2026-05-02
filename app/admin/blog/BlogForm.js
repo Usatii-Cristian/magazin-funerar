@@ -1,24 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+
+// Strip the HTML the public site stores back into plain text + light markdown,
+// so admins editing an existing post don't see raw <h2> tags.
+function htmlToPlain(input) {
+  if (!input) return "";
+  if (!/<\w+[^>]*>/.test(input)) return input;
+
+  let s = input;
+  s = s.replace(/\r/g, "");
+  s = s.replace(/<br\s*\/?>/gi, "\n");
+  s = s.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (_, t) => `\n## ${t.trim()}\n\n`);
+  s = s.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, t) => `\n### ${t.trim()}\n\n`);
+  s = s.replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, (_, t) => `\n#### ${t.trim()}\n\n`);
+  s = s.replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, "**$1**");
+  s = s.replace(/<b[^>]*>([\s\S]*?)<\/b>/gi, "**$1**");
+  s = s.replace(/<em[^>]*>([\s\S]*?)<\/em>/gi, "*$1*");
+  s = s.replace(/<i[^>]*>([\s\S]*?)<\/i>/gi, "*$1*");
+  s = s.replace(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, "[$2]($1)");
+  s = s.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_, t) => `- ${t.trim()}\n`);
+  s = s.replace(/<\/?(?:ul|ol)[^>]*>/gi, "\n");
+  s = s.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, t) => `${t.trim()}\n\n`);
+  s = s.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, t) =>
+    t.trim().split("\n").map((l) => `> ${l}`).join("\n") + "\n\n"
+  );
+  s = s.replace(/<[^>]+>/g, "");
+  s = s.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+  s = s.replace(/\n{3,}/g, "\n\n").trim();
+  return s;
+}
+
+const TOOLBAR = [
+  { label: "Titlu", insert: (sel) => `\n## ${sel || "Titlu"}\n\n` },
+  { label: "Subtitlu", insert: (sel) => `\n### ${sel || "Subtitlu"}\n\n` },
+  { label: "B", title: "Bold", insert: (sel) => `**${sel || "text îngroșat"}**` },
+  { label: "I", title: "Italic", insert: (sel) => `*${sel || "text înclinat"}*` },
+  { label: "Listă", insert: (sel) => (sel || "punct 1\npunct 2").split("\n").map((l) => `- ${l}`).join("\n") + "\n" },
+  { label: "Link", insert: (sel) => `[${sel || "text link"}](https://...)` },
+  { label: "Citat", insert: (sel) => `> ${sel || "citat"}\n\n` },
+];
 
 export default function BlogForm({ post }) {
   const isEdit = !!post;
   const router = useRouter();
+  const textareaRef = useRef(null);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(() => ({
     title: post?.title ?? "",
     excerpt: post?.excerpt ?? "",
-    content: post?.content ?? "",
+    content: htmlToPlain(post?.content ?? ""),
     coverImage: post?.coverImage ?? "",
     published: post?.published ?? false,
-  });
+  }));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   function field(key) {
     return (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
+  }
+
+  function applyToolbar(builder) {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart ?? 0;
+    const end = ta.selectionEnd ?? 0;
+    const before = form.content.slice(0, start);
+    const selected = form.content.slice(start, end);
+    const after = form.content.slice(end);
+    const inserted = builder(selected);
+    const next = before + inserted + after;
+    setForm((p) => ({ ...p, content: next }));
+    requestAnimationFrame(() => {
+      ta.focus();
+      const pos = before.length + inserted.length;
+      ta.setSelectionRange(pos, pos);
+    });
   }
 
   async function handleSubmit(e) {
@@ -87,7 +145,7 @@ export default function BlogForm({ post }) {
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-stone-700">
             Rezumat{" "}
-            <span className="text-xs font-normal text-stone-400">(afișat pe lista de blog)</span>
+            <span className="text-xs font-normal text-stone-400">— afișat pe lista de blog</span>
           </label>
           <textarea
             rows={2}
@@ -102,7 +160,7 @@ export default function BlogForm({ post }) {
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-stone-700">
             URL imagine copertă{" "}
-            <span className="text-xs font-normal text-stone-400">(opțional)</span>
+            <span className="text-xs font-normal text-stone-400">— opțional</span>
           </label>
           <input
             type="url"
@@ -116,34 +174,57 @@ export default function BlogForm({ post }) {
         {/* Content */}
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-            Conținut <span className="text-gold-500">*</span>
-            <span className="ml-2 text-xs font-normal text-stone-400">(HTML sau text simplu)</span>
+            Conținut articol <span className="text-gold-500">*</span>
           </label>
+          <p className="mb-2 text-xs leading-relaxed text-stone-500">
+            Scrieți textul normal — separați paragrafele cu o linie goală. Folosiți
+            butoanele de mai jos pentru titluri, listă, bold, link.
+          </p>
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {TOOLBAR.map((btn) => (
+              <button
+                key={btn.label}
+                type="button"
+                title={btn.title || btn.label}
+                onClick={() => applyToolbar(btn.insert)}
+                className="rounded-md border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 transition-colors hover:border-gold-400 hover:bg-gold-50"
+              >
+                {btn.label}
+              </button>
+            ))}
+          </div>
           <textarea
+            ref={textareaRef}
             required
             rows={20}
             value={form.content}
             onChange={field("content")}
-            placeholder="Scrieți conținutul articolului..."
-            className={`${inputCls} resize-y font-mono text-sm leading-relaxed`}
+            placeholder={`Scrieți articolul aici, ca un text normal.\n\nDouă linii goale = paragraf nou.\n\n## Folosiți două diez pentru un titlu\n\n**bold** și *italic* la nevoie.`}
+            className={`${inputCls} resize-y text-base leading-relaxed`}
           />
         </div>
 
         {/* Published */}
-        <label className="flex cursor-pointer items-center gap-3">
-          <input
-            type="checkbox"
-            checked={form.published}
-            onChange={(e) => setForm((p) => ({ ...p, published: e.target.checked }))}
-            className="h-4 w-4 rounded border-stone-300 accent-stone-900"
-          />
-          <span className="text-sm text-stone-700">
-            Publicat{" "}
-            <span className="text-stone-400">
-              (vizibil pe site; nebifat = ciornă)
+        <div className="rounded-xl border border-stone-200 bg-white p-4">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={form.published}
+              onChange={(e) => setForm((p) => ({ ...p, published: e.target.checked }))}
+              className="mt-0.5 h-4 w-4 rounded border-stone-300 accent-stone-900"
+            />
+            <span className="flex flex-col text-sm">
+              <span className="font-semibold text-stone-800">
+                Publică articolul pe site
+              </span>
+              <span className="text-stone-500">
+                {form.published
+                  ? "Articolul va fi vizibil pentru vizitatori imediat după salvare."
+                  : "Articolul rămâne salvat dar nu apare pe site până nu este publicat."}
+              </span>
             </span>
-          </span>
-        </label>
+          </label>
+        </div>
 
         {error && (
           <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
@@ -162,7 +243,7 @@ export default function BlogForm({ post }) {
             disabled={saving}
             className="flex-1 rounded-lg bg-stone-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-stone-800 disabled:opacity-60"
           >
-            {saving ? "Se salvează..." : isEdit ? "Actualizează articolul" : "Publică articolul"}
+            {saving ? "Se salvează..." : isEdit ? "Actualizează articolul" : form.published ? "Publică articolul" : "Salvează articolul"}
           </button>
         </div>
       </form>

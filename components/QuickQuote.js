@@ -1,58 +1,93 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 // Each calculator category maps to one or more DB categories.
 // `fallback` kicks in only when there are no products yet in those DB categories.
+const ALL_MATERIALS = ["granit-standard", "granit-negru", "marmura"];
+const STONE_EXTRAS = ["gravura-foto", "foto-ceramica", "vaza", "iluminare", "lampa"];
+
 const CATEGORIES = [
   {
     id: "monument-standard",
     label: "Monument standard",
     dbCategories: ["Monumente Standart", "Monumente Gri"],
     fallback: 6500,
+    materials: ALL_MATERIALS,
+    extras: STONE_EXTRAS,
   },
   {
     id: "monument-dublu",
     label: "Monument dublu",
     dbCategories: ["Monumente Duble"],
     fallback: 11500,
+    materials: ALL_MATERIALS,
+    extras: STONE_EXTRAS,
   },
   {
     id: "monument-vip",
     label: "Monument VIP",
     dbCategories: ["Monumente Vip", "Monumente Complex"],
     fallback: 18000,
+    materials: ALL_MATERIALS,
+    extras: STONE_EXTRAS,
   },
   {
     id: "monument-copii",
     label: "Monument copii",
     dbCategories: ["Monumente Copii"],
     fallback: 4800,
+    materials: ALL_MATERIALS,
+    extras: STONE_EXTRAS,
   },
   {
     id: "cruce",
     label: "Cruce",
     dbCategories: ["Cruci"],
     fallback: 2200,
+    materials: ["granit-standard", "granit-negru"],
+    extras: ["gravura-foto", "foto-ceramica", "lampa"],
   },
   {
     id: "gard",
     label: "Gard mormânt",
     dbCategories: ["Garduri Morminte"],
     fallback: 3800,
+    materials: ["granit-standard", "granit-negru"],
+    extras: [],
   },
   {
     id: "fundatie",
     label: "Fundație",
     dbCategories: ["Fundatii din Granit", "Fundatii din Beton Armat"],
     fallback: 2500,
+    materials: ["granit-standard"],
+    extras: [],
   },
   {
     id: "accesorii",
-    label: "Accesorii / Coroană",
-    dbCategories: ["Accesorii Monumente", "Coroane"],
+    label: "Accesorii monument",
+    dbCategories: ["Accesorii Monumente"],
     fallback: 800,
+    materials: ["granit-standard", "granit-negru"],
+    extras: [],
+  },
+  {
+    id: "coroane",
+    label: "Coroană funerară",
+    dbCategories: ["Coroane"],
+    fallback: 600,
+    materials: [],
+    extras: [],
+  },
+  {
+    id: "sicrie",
+    label: "Sicriu",
+    dbCategories: ["Sicrie"],
+    fallback: 3500,
+    materials: [],
+    extras: [],
   },
 ];
 
@@ -93,6 +128,24 @@ export default function QuickQuote({ products = [] }) {
   const [size, setSize] = useState(SIZES[1].id);
   const [extras, setExtras] = useState(new Set());
 
+  const currentCat = CATEGORIES.find((c) => c.id === category) ?? CATEGORIES[0];
+  const visibleMaterials = MATERIALS.filter((m) =>
+    currentCat.materials.includes(m.id)
+  );
+  const visibleExtras = EXTRAS.filter((e) => currentCat.extras.includes(e.id));
+
+  // Drop selections that no longer apply when switching categories.
+  useEffect(() => {
+    if (visibleMaterials.length > 0 && !currentCat.materials.includes(material)) {
+      setMaterial(visibleMaterials[0].id);
+    }
+    setExtras((prev) => {
+      const allowed = new Set(currentCat.extras);
+      const next = new Set([...prev].filter((id) => allowed.has(id)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [category]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Pre-compute price range per category from real products
   const categoryRanges = useMemo(() => {
     const map = {};
@@ -120,13 +173,14 @@ export default function QuickQuote({ products = [] }) {
       const ex = EXTRAS.find((e) => e.id === id);
       return sum + (ex?.add ?? 0);
     }, 0);
-    const factor = mat.mult * sz.mult;
+    const matMult = mat && currentCat.materials.includes(mat.id) ? mat.mult : 1;
+    const factor = matMult * sz.mult;
     return {
       min: range.min * factor + extrasTotal,
       max: range.max * factor + extrasTotal,
       count: range.count,
     };
-  }, [categoryRanges, category, material, size, extras]);
+  }, [categoryRanges, category, material, size, extras, currentCat]);
 
   function toggleExtra(id) {
     setExtras((prev) => {
@@ -186,28 +240,30 @@ export default function QuickQuote({ products = [] }) {
               </div>
             </div>
 
-            {/* Material */}
-            <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-stone-400">
-                Material
-              </label>
-              <div className="grid gap-2 sm:grid-cols-3">
-                {MATERIALS.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setMaterial(m.id)}
-                    className={`rounded-lg border px-4 py-2.5 text-sm transition ${
-                      material === m.id
-                        ? "border-gold-400 bg-gold-500/10 text-gold-300"
-                        : "border-stone-700 text-stone-300 hover:border-stone-500"
-                    }`}
-                  >
-                    {m.label}
-                  </button>
-                ))}
+            {/* Material — hidden for categories without stone material (coroane, sicrie) */}
+            {visibleMaterials.length > 0 && (
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-stone-400">
+                  Material
+                </label>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {visibleMaterials.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setMaterial(m.id)}
+                      className={`rounded-lg border px-4 py-2.5 text-sm transition ${
+                        material === m.id
+                          ? "border-gold-400 bg-gold-500/10 text-gold-300"
+                          : "border-stone-700 text-stone-300 hover:border-stone-500"
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Size */}
             <div>
@@ -232,32 +288,34 @@ export default function QuickQuote({ products = [] }) {
               </div>
             </div>
 
-            {/* Extras */}
-            <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-stone-400">
-                Opțiuni suplimentare
-              </label>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {EXTRAS.map((e) => {
-                  const active = extras.has(e.id);
-                  return (
-                    <button
-                      key={e.id}
-                      type="button"
-                      onClick={() => toggleExtra(e.id)}
-                      className={`flex items-center justify-between rounded-lg border px-3 py-2.5 text-left text-sm transition ${
-                        active
-                          ? "border-gold-400 bg-gold-500/10 text-gold-300"
-                          : "border-stone-700 text-stone-300 hover:border-stone-500"
-                      }`}
-                    >
-                      <span>{e.label}</span>
-                      <span className="text-xs text-stone-400">+{e.add} lei</span>
-                    </button>
-                  );
-                })}
+            {/* Extras — hidden for categories without applicable add-ons */}
+            {visibleExtras.length > 0 && (
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-stone-400">
+                  Opțiuni suplimentare
+                </label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {visibleExtras.map((e) => {
+                    const active = extras.has(e.id);
+                    return (
+                      <button
+                        key={e.id}
+                        type="button"
+                        onClick={() => toggleExtra(e.id)}
+                        className={`flex items-center justify-between rounded-lg border px-3 py-2.5 text-left text-sm transition ${
+                          active
+                            ? "border-gold-400 bg-gold-500/10 text-gold-300"
+                            : "border-stone-700 text-stone-300 hover:border-stone-500"
+                        }`}
+                      >
+                        <span>{e.label}</span>
+                        <span className="text-xs text-stone-400">+{e.add} lei</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Result */}
