@@ -63,7 +63,7 @@ export default async function HomePage() {
         {/* Mobile background image */}
         <div className="absolute inset-0 lg:hidden">
           <Image
-            src="https://images.unsplash.com/photo-1572547030508-9c9c9d2140bf?w=1200&q=80"
+            src="https://images.unsplash.com/photo-1572547030508-9c9c9d2140bf?w=1600&q=85"
             alt="Monument granit"
             fill
             className="object-cover brightness-30"
@@ -124,19 +124,20 @@ export default async function HomePage() {
         >
           <div className="grid h-full grid-cols-2 grid-rows-2">
             {[
-              "https://images.unsplash.com/photo-1572547030508-9c9c9d2140bf?w=800&q=80",
-              "https://images.unsplash.com/photo-1699901610376-8f9fc9dea24b?w=800&q=80",
-              "https://images.unsplash.com/photo-1719870173939-e6638ab2ff0a?w=800&q=80",
-              "https://images.unsplash.com/photo-1644666218912-5c4069dc05f0?w=800&q=80",
+              "https://images.unsplash.com/photo-1572547030508-9c9c9d2140bf?w=1600&q=85",
+              "https://images.unsplash.com/photo-1699901610376-8f9fc9dea24b?w=1600&q=85",
+              "https://images.unsplash.com/photo-1719870173939-e6638ab2ff0a?w=1600&q=85",
+              "https://images.unsplash.com/photo-1644666218912-5c4069dc05f0?w=1600&q=85",
             ].map((src, i) => (
               <div key={i} className="relative overflow-hidden">
                 <Image
                   src={src}
                   alt="PrimNord Granit"
                   fill
-                  className="object-cover brightness-75 transition-transform duration-700 hover:scale-105"
-                  sizes="(max-width: 1024px) 0px, 25vw"
-                  loading="lazy"
+                  className="object-cover object-center brightness-75 transition-transform duration-700 hover:scale-105"
+                  sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 24vw, 0px"
+                  priority={i === 0}
+                  loading={i === 0 ? "eager" : "lazy"}
                 />
                 <div className="absolute inset-0 bg-stone-950/20" />
               </div>
