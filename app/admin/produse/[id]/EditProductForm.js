@@ -186,7 +186,7 @@ export default function EditProductForm({ product }) {
             required
             value={form.name}
             onChange={(e) =>
-              setForm((p) => ({ ...p, name: e.target.value.replace(/[0-9]/g, "") }))
+              setForm((p) => ({ ...p, name: e.target.value }))
             }
             className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-base font-bold text-stone-900 outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20"
           />

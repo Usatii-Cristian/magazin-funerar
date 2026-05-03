@@ -20,19 +20,37 @@ export async function PUT(request, { params }) {
   try {
     const data = await request.json();
 
+    if (!data.name || !data.category || !data.price) {
+      return NextResponse.json(
+        { error: "Lipsesc câmpurile: nume, categorie sau preț" },
+        { status: 400 }
+      );
+    }
+    const price = parseInt(data.price, 10);
+    if (!Number.isFinite(price) || price < 0) {
+      return NextResponse.json({ error: "Preț invalid" }, { status: 400 });
+    }
+    let originalPrice = null;
+    if (data.originalPrice !== null && data.originalPrice !== undefined && data.originalPrice !== "") {
+      originalPrice = parseInt(data.originalPrice, 10);
+      if (!Number.isFinite(originalPrice) || originalPrice < 0) {
+        return NextResponse.json({ error: "Preț original invalid" }, { status: 400 });
+      }
+    }
+
     // Update product without slug (avoids stale-client issue)
     const product = await prisma.product.update({
       where: { id },
       data: {
-        name: data.name,
-        category: data.category,
-        material: data.material,
-        price: parseInt(data.price),
-        originalPrice: data.originalPrice ? parseInt(data.originalPrice) : null,
-        images: data.images || [],
-        description: data.description,
-        dimensions: data.dimensions || null,
-        featured: data.featured || false,
+        name: String(data.name).slice(0, 200),
+        category: String(data.category).slice(0, 100),
+        material: String(data.material || "Granit").slice(0, 100),
+        price,
+        originalPrice,
+        images: Array.isArray(data.images) ? data.images.filter((u) => typeof u === "string") : [],
+        description: String(data.description || "").slice(0, 5000),
+        dimensions: data.dimensions ? String(data.dimensions).slice(0, 200) : null,
+        featured: Boolean(data.featured),
       },
     });
 

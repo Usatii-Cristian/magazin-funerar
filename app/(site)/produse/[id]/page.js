@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProductById, getSimilarProducts } from "@/lib/db";
-import { products as staticProducts } from "@/lib/data";
+import { products as staticProducts, companyInfo } from "@/lib/data";
 import { slugify } from "@/lib/slugify";
 import { SITE_URL, SITE_NAME, ORG_PHONE } from "@/lib/site";
 import { safeJsonLd } from "@/lib/jsonLd";
@@ -277,7 +277,7 @@ export default async function ProductPage({ params }) {
                     Ofertă
                   </Link>
                   <a
-                    href="tel:079175383"
+                    href={`tel:${companyInfo.phoneIntl}`}
                     className="flex items-center justify-center gap-1.5 rounded-lg border-2 border-stone-200 py-4 text-sm font-semibold text-stone-800 transition-colors hover:border-stone-400"
                   >
                     <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -286,7 +286,7 @@ export default async function ProductPage({ params }) {
                     Sunați
                   </a>
                 </div>
-                <p className="mt-3 text-center text-xs text-stone-400">079 175 383</p>
+                <p className="mt-3 text-center text-xs text-stone-400">{companyInfo.phone}</p>
               </div>
             </div>
           </div>
