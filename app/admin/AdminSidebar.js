@@ -73,21 +73,26 @@ export default function AdminSidebar({ onClose }) {
       </div>
 
       <nav className="flex-1 space-y-1 p-4">
-        {navLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            onClick={handleNavClick}
-            className={`flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm transition-colors ${
-              pathname.startsWith(link.href)
-                ? "bg-stone-800 text-white"
-                : "text-stone-400 hover:bg-stone-800 hover:text-white"
-            }`}
-          >
-            {link.icon}
-            {link.label}
-          </Link>
-        ))}
+        {navLinks.map((link) => {
+          const isActive =
+            pathname === link.href ||
+            (typeof pathname === "string" && pathname.startsWith(link.href + "/"));
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={handleNavClick}
+              className={`flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm transition-colors ${
+                isActive
+                  ? "bg-stone-800 text-white"
+                  : "text-stone-400 hover:bg-stone-800 hover:text-white"
+              }`}
+            >
+              {link.icon}
+              {link.label}
+            </Link>
+          );
+        })}
       </nav>
 
       <div className="space-y-1 border-t border-stone-700 p-4">

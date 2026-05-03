@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { del } from "@vercel/blob";
 import prisma from "@/lib/prisma";
 import { renderArticleContent } from "@/lib/sanitize";
+
+async function deleteBlobIfHosted(url) {
+  if (typeof url !== "string" || !url.includes(".public.blob.vercel-storage.com")) return;
+  try {
+    await del(url);
+  } catch (err) {
+    console.error("Blob cleanup failed (blog cover):", err.message);
+  }
+}
 
 const MAX_TITLE = 200;
 const MAX_EXCERPT = 500;
@@ -100,6 +110,7 @@ export async function DELETE(request, { params }) {
     const post = await prisma.blogPost.delete({ where: { id } });
     revalidatePath("/blog");
     revalidatePath(`/blog/${post.slug}`);
+    deleteBlobIfHosted(post.coverImage).catch(() => {});
     return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });

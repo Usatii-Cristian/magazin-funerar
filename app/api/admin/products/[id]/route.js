@@ -1,8 +1,25 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { del } from "@vercel/blob";
 import prisma from "@/lib/prisma";
 import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
 import { reportError } from "@/lib/errorTracking";
+
+// Best-effort cleanup of Vercel Blob URLs that the product no longer
+// references. Called from PUT (when admin removes images) and DELETE.
+// Errors are swallowed so a missing/already-deleted blob doesn't break
+// the user-visible operation.
+async function deleteBlobs(urls) {
+  const targets = (urls || []).filter(
+    (u) => typeof u === "string" && u.includes(".public.blob.vercel-storage.com")
+  );
+  if (targets.length === 0) return;
+  try {
+    await del(targets);
+  } catch (err) {
+    console.error("Blob cleanup failed:", err.message);
+  }
+}
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -38,6 +55,20 @@ export async function PUT(request, { params }) {
       }
     }
 
+    const newImages = Array.isArray(data.images)
+      ? data.images.filter((u) => typeof u === "string")
+      : [];
+
+    // Snapshot the old images before update so we can drop the ones the
+    // admin removed from Vercel Blob.
+    const previous = await prisma.product.findUnique({
+      where: { id },
+      select: { images: true, slug: true },
+    });
+    const removedImages = (previous?.images ?? []).filter(
+      (u) => !newImages.includes(u)
+    );
+
     // Update product without slug (avoids stale-client issue)
     const product = await prisma.product.update({
       where: { id },
@@ -47,12 +78,15 @@ export async function PUT(request, { params }) {
         material: String(data.material || "Granit").slice(0, 100),
         price,
         originalPrice,
-        images: Array.isArray(data.images) ? data.images.filter((u) => typeof u === "string") : [],
+        images: newImages,
         description: String(data.description || "").slice(0, 5000),
         dimensions: data.dimensions ? String(data.dimensions).slice(0, 200) : null,
         featured: Boolean(data.featured),
       },
     });
+
+    // Fire-and-forget — don't block the response on Blob deletes.
+    deleteBlobs(removedImages).catch(() => {});
 
     // Slug regeneration is non-blocking — update already succeeded
     let slug = slugify(data.name);
@@ -77,9 +111,20 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   const { id } = await params;
   try {
+    // Read images + slug before delete so we can clean up Blob storage
+    // and invalidate the canonical product page.
+    const existing = await prisma.product.findUnique({
+      where: { id },
+      select: { images: true, slug: true },
+    });
+
     await prisma.product.delete({ where: { id } });
+
     revalidatePath("/");
     revalidatePath("/produse");
+    if (existing?.slug) revalidatePath(`/produse/${existing.slug}`);
+    deleteBlobs(existing?.images).catch(() => {});
+
     return NextResponse.json({ success: true });
   } catch (err) {
     await reportError("admin:product-delete", err, { id });

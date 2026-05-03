@@ -20,7 +20,12 @@ export default function ImageGallery({ images: rawImages, name, children }) {
   const dragRef = useRef({ active: false, startX: 0, startY: 0, startOffX: 0, startOffY: 0, moved: false });
   const transformWrapperRef = useRef(null);
   const lightboxIndexRef = useRef(null);
-  lightboxIndexRef.current = lightboxIndex;
+  // Mirror lightboxIndex into a ref so the keyboard handler can read the
+  // current value without re-binding on every change. Mutating refs during
+  // render is an anti-pattern in concurrent React, so do it in an effect.
+  useEffect(() => {
+    lightboxIndexRef.current = lightboxIndex;
+  }, [lightboxIndex]);
 
   // Apply CSS transform directly — bypasses React render cycle entirely
   function applyTransform(x, y, s, animated = false) {
