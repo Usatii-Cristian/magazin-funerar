@@ -312,14 +312,14 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                             </div>
                           )}
                           <div className="absolute inset-0 bg-stone-900/25" />
-                          <div className="absolute left-3 top-3 z-10 flex gap-2">
+                          <div className="absolute left-3 top-3 z-10 flex flex-col gap-1">
                             <span
-                              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${categoryBadge[p.category] ?? "bg-stone-100 text-stone-700"}`}
+                              className={`self-start rounded-full px-2.5 py-0.5 text-xs font-semibold ${categoryBadge[p.category] ?? "bg-stone-100 text-stone-700"}`}
                             >
                               {p.category}
                             </span>
                             {pct && (
-                              <span className="rounded bg-red-500 px-1.5 py-0.5 text-xs font-semibold text-white">
+                              <span className="self-start rounded bg-red-500 px-1.5 py-0.5 text-xs font-semibold text-white">
                                 -{pct}%
                               </span>
                             )}

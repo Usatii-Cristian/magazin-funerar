@@ -112,7 +112,7 @@ export default function PrivacyPage() {
               9. Contact
             </h2>
             <p className="leading-relaxed">
-              Pentru orice întrebare privind politica de confidențialitate, ne puteți contacta la <a href={`tel:${companyInfo.phoneIntl}`} className="text-gold-600 underline">{companyInfo.phone}</a> sau prin email la <a href={`mailto:${companyInfo.email}`} className="text-gold-600 underline">{companyInfo.email}</a>.
+              Pentru orice întrebare privind politica de confidențialitate, ne puteți contacta la <a href={`tel:${companyInfo.phoneIntl}`} className="text-gold-600 underline">{companyInfo.phone}</a>.
             </p>
           </section>
         </div>

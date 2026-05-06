@@ -87,7 +87,7 @@ export default function TermsPage() {
               8. Contact
             </h2>
             <p className="leading-relaxed">
-              Pentru orice întrebări legate de acești termeni, ne puteți contacta la telefonul <a href={`tel:${companyInfo.phoneIntl}`} className="text-gold-600 underline">{companyInfo.phone}</a> sau la adresa de email <a href={`mailto:${companyInfo.email}`} className="text-gold-600 underline">{companyInfo.email}</a>.
+              Pentru orice întrebări legate de acești termeni, ne puteți contacta la telefonul <a href={`tel:${companyInfo.phoneIntl}`} className="text-gold-600 underline">{companyInfo.phone}</a>.
             </p>
           </section>
         </div>
