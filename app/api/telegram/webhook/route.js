@@ -38,19 +38,31 @@ export async function POST(request) {
     const validId = msgId && msgId !== "x" && /^[a-f0-9]{24}$/.test(msgId);
 
     if (!validId) {
-      // No DB row to look up — derive new state purely from action, preserving
-      // the unrelated axis as "—" since we have no record of it.
-      const newRead = action === "contactat" ? true : action === "necontactat" ? false : undefined;
-      const newDelivered = action === "livrat" ? true : action === "nelivrat" ? false : undefined;
+      // No DB row — parse the old status from the existing message text so we
+      // can preserve the unrelated axis instead of showing "—".
       const oldText = message.text ?? "";
+      const oldRead = oldText.includes("✅ Contactat")
+        ? true
+        : oldText.includes("❌ Necontactat")
+        ? false
+        : false;
+      const oldDelivered = oldText.includes("📦 Livrat")
+        ? true
+        : oldText.includes("⏳ Nelivrat")
+        ? false
+        : false;
+
+      const newRead =
+        action === "contactat" ? true : action === "necontactat" ? false : oldRead;
+      const newDelivered =
+        action === "livrat" ? true : action === "nelivrat" ? false : oldDelivered;
+
       const headerEnd = oldText.indexOf("\n\n");
       const body = headerEnd >= 0 ? oldText.slice(headerEnd) : `\n\n${oldText}`;
       const header =
         `📬 Mesaj nou de contact!\n` +
-        `📌 Status: ${
-          newRead === true ? "✅ Contactat" : newRead === false ? "❌ Necontactat" : "—"
-        } • ${
-          newDelivered === true ? "📦 Livrat" : newDelivered === false ? "⏳ Nelivrat" : "—"
+        `📌 Status: ${newRead ? "✅ Contactat" : "❌ Necontactat"} • ${
+          newDelivered ? "📦 Livrat" : "⏳ Nelivrat"
         }${isFinal ? " (finalizat)" : ""}`;
       const newText = header + body;
 
