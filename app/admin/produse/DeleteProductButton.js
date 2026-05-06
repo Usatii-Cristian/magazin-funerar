@@ -17,7 +17,12 @@ export default function DeleteProductButton({ productId, productName }) {
       if (!res.ok) throw new Error("Eroare la ștergere");
       router.refresh();
     } catch {
-      alert("Eroare la ștergerea produsului.");
+      alert(
+        "Produsul NU a fost șters — baza de date nu a răspuns.\n\n" +
+        "Ce poți face:\n" +
+        "1. Încearcă din nou peste câteva secunde.\n" +
+        "2. Dacă eroarea persistă, șterge produsul direct din MongoDB Compass."
+      );
     } finally {
       setLoading(false);
       setConfirming(false);
