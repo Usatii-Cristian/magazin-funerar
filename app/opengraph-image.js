@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "nodejs";
-export const alt = "PrimNord Granit — Servicii Funerare & Monumente din Granit";
+export const alt = "GranitNord Elit CV — Servicii Funerare & Monumente din Granit";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -50,7 +50,7 @@ export default async function OpenGraphImage() {
               letterSpacing: "-0.02em",
             }}
           >
-            <span>PrimNord</span>
+            <span>GranitNord</span>
             <span style={{ color: "#d4a64f" }}>-Granit</span>
           </div>
           <div

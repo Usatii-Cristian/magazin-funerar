@@ -4,10 +4,10 @@ import Link from "next/link";
 export const metadata = {
   title: "Despre noi — Peste 15 Ani de Experiență",
   description:
-    "PrimNord Granit — peste 15 ani de experiență în servicii funerare și monumente din granit. Valorile, misiunea și echipa noastră dedicată familiei dumneavoastră.",
+    "GranitNord Elit CV — peste 15 ani de experiență în servicii funerare și monumente din granit. Valorile, misiunea și echipa noastră dedicată familiei dumneavoastră.",
   alternates: { canonical: "/despre" },
   openGraph: {
-    title: "Despre PrimNord Granit — Peste 15 Ani de Experiență",
+    title: "Despre GranitNord Elit CV — Peste 15 Ani de Experiență",
     description:
       "Peste 15 ani de experiență în servicii funerare și monumente din granit.",
     url: "/despre",
@@ -44,7 +44,7 @@ export default function AboutPage() {
             Cine suntem
           </p>
           <h1 className="font-display text-4xl font-semibold text-white sm:text-5xl">
-            Despre PrimNord Granit
+            Despre GranitNord Elit CV
           </h1>
           <p className="mt-5 text-base leading-relaxed text-stone-400">
             O echipă umană, angajată să ofere sprijin real în momentele cele
@@ -66,7 +66,7 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-4 leading-relaxed text-stone-600">
                 <p>
-                  PrimNord Granit a luat naștere din dorința de a oferi
+                  GranitNord Elit CV a luat naștere din dorința de a oferi
                   familiilor din regiune servicii funerare demne, complete și
                   accesibile. Am început ca o mică afacere de familie și am
                   crescut an după an, ghidați de un singur principiu: omul în

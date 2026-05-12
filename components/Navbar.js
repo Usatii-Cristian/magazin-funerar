@@ -26,14 +26,14 @@ export default function Navbar() {
         <Link href="/" onClick={() => setOpen(false)} className="flex shrink-0 items-center gap-3">
           <Image
             src="/logo.png"
-            alt="PrimNord Granit"
+            alt="GranitNord Elit CV"
             width={48}
             height={48}
             priority
             className="rounded-sm"
           />
           <span className="font-display text-base font-semibold leading-tight text-white">
-            PrimNord<span className="text-gold-400">-Granit</span>
+            GranitNord<span className="text-gold-400"> Elit CV</span>
           </span>
         </Link>
 

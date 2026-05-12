@@ -4,10 +4,10 @@ import ContactForm from "./ContactForm";
 export const metadata = {
   title: "Contact — Disponibili 24/7",
   description:
-    "Contactați PrimNord Granit pentru servicii funerare și monumente din granit. Sunați la 079 175 383 — suntem disponibili 24/7 pentru orice nevoie urgentă.",
+    "Contactați GranitNord Elit CV pentru servicii funerare și monumente din granit. Sunați la 079 175 383 — suntem disponibili 24/7 pentru orice nevoie urgentă.",
   alternates: { canonical: "/contact" },
   openGraph: {
-    title: "Contact PrimNord Granit — Disponibili 24/7",
+    title: "Contact GranitNord Elit CV — Disponibili 24/7",
     description:
       "Sunați la 079 175 383 — suntem disponibili 24/7 pentru orice nevoie urgentă.",
     url: "/contact",

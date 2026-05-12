@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="sm:col-span-2 md:col-span-2">
             <span className="mb-3 block font-display text-lg font-semibold leading-none text-white">
-              PrimNord<span className="text-gold-400">-Granit</span>
+              GranitNord<span className="text-gold-400"> Elit CV</span>
             </span>
             <p className="max-w-xs text-sm leading-relaxed">
               {companyInfo.description}
@@ -62,7 +62,7 @@ export default function Footer() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-stone-800 pt-6 text-xs text-stone-500 sm:flex-row sm:items-center">
           <p>
-            © {new Date().getFullYear()} PrimNord Granit. Toate drepturile
+            © {new Date().getFullYear()} GranitNord Elit CV. Toate drepturile
             rezervate.
           </p>
           <div className="flex gap-5">

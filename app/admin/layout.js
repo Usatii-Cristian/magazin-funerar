@@ -1,7 +1,7 @@
 import AdminLayoutClient from "./AdminLayoutClient";
 
 export const metadata = {
-  title: "Admin — PrimNord Granit",
+  title: "Admin — GranitNord Elit CV",
 };
 
 export default function AdminLayout({ children }) {

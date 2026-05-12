@@ -146,7 +146,7 @@ export default async function BlogPostPage({ params }) {
             Aveți nevoie de ajutor?
           </h3>
           <p className="mt-2 text-stone-400">
-            Echipa PrimNord Granit vă stă la dispoziție pentru orice întrebare.
+            Echipa GranitNord Elit CV vă stă la dispoziție pentru orice întrebare.
           </p>
           <Link
             href="/contact"

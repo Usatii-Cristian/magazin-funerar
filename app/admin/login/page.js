@@ -47,7 +47,7 @@ export default function AdminLogin() {
             Panou administrare
           </p>
           <h1 className="font-display text-2xl font-semibold text-stone-900">
-            PrimNord Granit
+            GranitNord Elit CV
           </h1>
         </div>
 

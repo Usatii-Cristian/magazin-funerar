@@ -8,7 +8,7 @@ export const metadata = {
     "Articole despre monumente funerare, alegerea materialelor, organizarea serviciilor de înmormântare și tradiții funerare din Republica Moldova.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "Blog PrimNord Granit — Sfaturi și Tradiții Funerare",
+    title: "Blog GranitNord Elit CV — Sfaturi și Tradiții Funerare",
     description:
       "Articole despre monumente funerare, alegerea materialelor și tradiții funerare din Moldova.",
     url: "/blog",

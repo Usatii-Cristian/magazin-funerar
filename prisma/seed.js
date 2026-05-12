@@ -25,7 +25,7 @@ const posts = [
 <p>Înainte de a comanda, verificați regulamentul cimitirului privind dimensiunile admise. Un monument prea mare poate crea probleme administrative, iar unul prea mic poate părea nepotrivit față de locul de înhumare.</p>
 
 <h2>Bugetul</h2>
-<p>La PrimNord Granit oferim soluții pentru orice buget, de la monumente simple la complexe ornamentale. Contactați-ne pentru o ofertă personalizată.</p>`,
+<p>La GranitNord Elit CV oferim soluții pentru orice buget, de la monumente simple la complexe ornamentale. Contactați-ne pentru o ofertă personalizată.</p>`,
     published: true,
   },
   {
@@ -74,7 +74,7 @@ const posts = [
 <p>Contactați preotul parohiei pentru programarea slujbei de înmormântare. De obicei, aceasta are loc la 3 zile de la deces, conform tradiției ortodoxe.</p>
 
 <h2>Monumentul funerar</h2>
-<p>Comanda monumentului se poate face imediat după înhumare. La PrimNord Granit, termenul standard de execuție este de 30–60 de zile, în funcție de complexitate.</p>
+<p>Comanda monumentului se poate face imediat după înhumare. La GranitNord Elit CV, termenul standard de execuție este de 30–60 de zile, în funcție de complexitate.</p>
 
 <h2>Parastasele</h2>
 <p>Conform tradiției, parastasele se organizează la 3 zile, 9 zile, 40 de zile, 6 luni și 1 an. Monumentul trebuie instalat, de regulă, înainte de parastas de 40 de zile.</p>`,
@@ -149,7 +149,7 @@ const posts = [
 <p><strong>Gravura cu laser</strong> — permite detalii fine, portrete și imagini complexe. Ideală pentru fotografii gravate pe granit lucios.</p>
 
 <h2>Fotografii gravate</h2>
-<p>La PrimNord Granit oferim gravura fotografiei pe granit sau ceramică. Fotografia digitală se procesează și se gravează direct pe suprafața piesei, rezistând la intemperii zeci de ani.</p>
+<p>La GranitNord Elit CV oferim gravura fotografiei pe granit sau ceramică. Fotografia digitală se procesează și se gravează direct pe suprafața piesei, rezistând la intemperii zeci de ani.</p>
 
 <h2>Citate și versete recomandate</h2>
 <blockquote><em>"Eu sunt învierea și viața; cel ce crede în Mine, chiar dacă va muri, va trăi." — Ioan 11:25</em></blockquote>

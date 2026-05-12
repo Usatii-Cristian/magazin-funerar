@@ -55,7 +55,7 @@ export default function AdminSidebar({ onClose }) {
             Admin
           </p>
           <h1 className="font-display text-lg font-semibold text-white">
-            PrimNord Granit
+            GranitNord Elit CV
           </h1>
         </div>
         {/* Close button visible only on mobile */}

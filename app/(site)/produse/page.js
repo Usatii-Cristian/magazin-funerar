@@ -9,7 +9,7 @@ export const metadata = {
     "Catalog complet de monumente funerare, cruci, sicrie, coroane și accesorii din granit și marmură. Personalizate, gravate și montate profesionist în toată Moldova.",
   alternates: { canonical: "/produse" },
   openGraph: {
-    title: "Monumente Funerare din Granit și Marmură | PrimNord Granit",
+    title: "Monumente Funerare din Granit și Marmură | GranitNord Elit CV",
     description:
       "Catalog complet de monumente funerare, cruci, sicrie, coroane și accesorii din granit și marmură.",
     url: "/produse",

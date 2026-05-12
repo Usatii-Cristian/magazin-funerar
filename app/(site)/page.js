@@ -7,12 +7,12 @@ import QuickQuote from "@/components/QuickQuote";
 export const revalidate = 60;
 
 export const metadata = {
-  title: { absolute: "PrimNord Granit — Servicii Funerare & Monumente din Granit" },
+  title: { absolute: "GranitNord Elit CV — Servicii Funerare & Monumente din Granit" },
   description:
     "Servicii funerare complete și monumente funerare din granit și marmură. Peste 15 ani de experiență, disponibili 24/7 în toată Republica Moldova. Comanda online sau sunați 079 175 383.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "PrimNord Granit — Servicii Funerare & Monumente din Granit",
+    title: "GranitNord Elit CV — Servicii Funerare & Monumente din Granit",
     description:
       "Servicii funerare complete și monumente din granit. Peste 15 ani de experiență, disponibili 24/7.",
     url: "/",
@@ -132,7 +132,7 @@ export default async function HomePage() {
               <div key={i} className="relative overflow-hidden">
                 <Image
                   src={src}
-                  alt="PrimNord Granit"
+                  alt="GranitNord Elit CV"
                   fill
                   className="object-cover object-center brightness-75 transition-transform duration-700 hover:scale-105"
                   sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 24vw, 0px"

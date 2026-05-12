@@ -35,8 +35,8 @@ export async function register() {
       existingSlugs.add(slug);
       await setSlugRaw(prisma, id, slug);
     }
-    console.log(`[PrimNord] Generat slug-uri pentru ${withoutSlugs.length} produse`);
+    console.log(`[GranitNord] Generat slug-uri pentru ${withoutSlugs.length} produse`);
   } catch (e) {
-    console.error("[PrimNord] Eroare sluguri:", e.message);
+    console.error("[GranitNord] Eroare sluguri:", e.message);
   }
 }

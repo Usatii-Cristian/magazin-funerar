@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { companyInfo } from "@/lib/data";
 
 const WHATSAPP_TEXT = encodeURIComponent(
-  "Bună ziua, vă scriu de pe site-ul PrimNord Granit. Aș dori mai multe informații."
+  "Bună ziua, vă scriu de pe site-ul GranitNord Elit CV. Aș dori mai multe informații."
 );
 
 function WhatsAppIcon({ className }) {

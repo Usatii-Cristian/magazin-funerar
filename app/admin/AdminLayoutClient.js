@@ -44,7 +44,7 @@ export default function AdminLayoutClient({ children }) {
             </svg>
           </button>
           <span className="font-display text-base font-semibold text-stone-900">
-            PrimNord Admin
+            GranitNord Admin
           </span>
         </div>
 

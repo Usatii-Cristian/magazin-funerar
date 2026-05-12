@@ -2,7 +2,7 @@ import { companyInfo } from "@/lib/data";
 
 export const metadata = {
   title: "Politica de confidențialitate",
-  description: "Politica de confidențialitate și prelucrare a datelor personale pe site-ul PrimNord Granit.",
+  description: "Politica de confidențialitate și prelucrare a datelor personale pe site-ul GranitNord Elit CV.",
   alternates: { canonical: "/confidentialitate" },
   robots: { index: false, follow: true },
 };
