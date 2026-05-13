@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { buildKeyboard, buildMessageText, editMessage } from "@/lib/telegram";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 async function syncTelegram(updated) {
   const stored = updated.telegramMessages;
@@ -31,6 +32,8 @@ async function syncTelegram(updated) {
 }
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   try {
     const messages = await prisma.message.findMany({
       orderBy: { createdAt: "desc" },
@@ -42,6 +45,8 @@ export async function GET() {
 }
 
 export async function PATCH(request) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   try {
     const { id, action } = await request.json();
 

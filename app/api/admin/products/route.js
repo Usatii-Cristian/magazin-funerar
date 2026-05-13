@@ -3,8 +3,11 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
 import { reportError } from "@/lib/errorTracking";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   try {
     const products = await prisma.product.findMany({
       orderBy: { createdAt: "desc" },
@@ -16,6 +19,8 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   try {
     const data = await request.json();
 

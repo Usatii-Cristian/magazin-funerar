@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { del } from "@vercel/blob";
 import prisma from "@/lib/prisma";
 import { renderArticleContent } from "@/lib/sanitize";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 async function deleteBlobIfHosted(url) {
   if (typeof url !== "string" || !url.includes(".public.blob.vercel-storage.com")) return;
@@ -41,6 +42,8 @@ async function uniqueSlug(title, excludeId) {
 }
 
 export async function GET(request, { params }) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   const { id } = await params;
   try {
     const post = await prisma.blogPost.findUnique({ where: { id } });
@@ -52,6 +55,8 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   const { id } = await params;
   try {
     const data = await request.json();
@@ -105,6 +110,8 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   const { id } = await params;
   try {
     const post = await prisma.blogPost.delete({ where: { id } });

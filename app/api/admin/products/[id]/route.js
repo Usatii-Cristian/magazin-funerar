@@ -4,6 +4,7 @@ import { del } from "@vercel/blob";
 import prisma from "@/lib/prisma";
 import { slugify, generateUniqueSlugRaw, setSlugRaw } from "@/lib/slugify";
 import { reportError } from "@/lib/errorTracking";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 // Best-effort cleanup of Vercel Blob URLs that the product no longer
 // references. Called from PUT (when admin removes images) and DELETE.
@@ -22,6 +23,8 @@ async function deleteBlobs(urls) {
 }
 
 export async function GET(request, { params }) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   const { id } = await params;
   try {
     const product = await prisma.product.findUnique({ where: { id } });
@@ -33,6 +36,8 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   const { id } = await params;
   try {
     const data = await request.json();
@@ -109,6 +114,8 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   const { id } = await params;
   try {
     // Read images + slug before delete so we can clean up Blob storage

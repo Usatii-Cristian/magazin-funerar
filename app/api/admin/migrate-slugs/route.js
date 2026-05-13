@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { slugify, setSlugRaw } from "@/lib/slugify";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 export async function POST() {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   try {
     const result = await prisma.$runCommandRaw({
       find: "Product",

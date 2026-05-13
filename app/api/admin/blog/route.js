@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { renderArticleContent } from "@/lib/sanitize";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 const MAX_TITLE = 200;
 const MAX_EXCERPT = 500;
@@ -9,6 +10,8 @@ const MAX_CONTENT = 200_000;
 const MAX_COVER = 2000;
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   try {
     const posts = await prisma.blogPost.findMany({
       orderBy: { createdAt: "desc" },
@@ -42,6 +45,8 @@ async function uniqueSlug(title, excludeId) {
 }
 
 export async function POST(request) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   try {
     const data = await request.json();
     const title = typeof data.title === "string" ? data.title.trim() : "";

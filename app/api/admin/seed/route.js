@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { products as staticProducts } from "@/lib/data";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 function slugify(name) {
   return name
@@ -17,6 +18,8 @@ function slugify(name) {
 }
 
 export async function POST() {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   try {
     let adminCreated = false;
     const existing = await prisma.admin.findUnique({

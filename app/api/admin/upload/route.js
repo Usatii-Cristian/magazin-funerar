@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { handleUpload } from "@vercel/blob/client";
 import { reportError } from "@/lib/errorTracking";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 export async function POST(request) {
+  const auth = await requireAdmin();
+  if (auth) return auth;
   let body;
   try {
     body = await request.json();
