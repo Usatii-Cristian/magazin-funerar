@@ -32,7 +32,7 @@ export default function Navbar() {
             priority
             className=""
           />
-          <span className="font-display text-base font-semibold leading-tight text-white">
+          <span className="font-display text-sm sm:text-base font-semibold leading-tight text-white">
             GranitNord<span className="text-gold-400"> Elit CV</span>
           </span>
         </Link>

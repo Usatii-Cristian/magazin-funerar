@@ -214,7 +214,7 @@ export default function QuickQuote({ products = [] }) {
               <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-stone-400">
                 Tip produs
               </label>
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((c) => {
                   const r = categoryRanges[c.id];
                   return (
@@ -294,7 +294,7 @@ export default function QuickQuote({ products = [] }) {
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-stone-400">
                   Opțiuni suplimentare
                 </label>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid grid-cols-2 gap-2">
                   {visibleExtras.map((e) => {
                     const active = extras.has(e.id);
                     return (

@@ -63,7 +63,7 @@ function PriceFilter({ priceRange, onChange, large }) {
           placeholder="Min"
           value={priceRange.min}
           onChange={(e) => onChange("min", e.target.value.replace(/\D/g, ""))}
-          className={`w-full rounded-lg border border-stone-200 bg-white text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20 ${large ? "px-3 py-2.5 text-sm" : "px-2 py-1.5 text-xs"}`}
+          className={`w-full rounded-lg border border-stone-200 bg-white text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20 ${large ? "px-3 py-2.5 text-sm" : "px-2 py-2.5 text-xs"}`}
         />
         <span className="shrink-0 text-stone-300">—</span>
         <input
@@ -72,7 +72,7 @@ function PriceFilter({ priceRange, onChange, large }) {
           placeholder="Max"
           value={priceRange.max}
           onChange={(e) => onChange("max", e.target.value.replace(/\D/g, ""))}
-          className={`w-full rounded-lg border border-stone-200 bg-white text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20 ${large ? "px-3 py-2.5 text-sm" : "px-2 py-1.5 text-xs"}`}
+          className={`w-full rounded-lg border border-stone-200 bg-white text-stone-700 outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/20 ${large ? "px-3 py-2.5 text-sm" : "px-2 py-2.5 text-xs"}`}
         />
       </div>
     </div>

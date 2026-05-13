@@ -156,7 +156,7 @@ export default function CompareClient({ products }) {
 
         {/* Comparison table */}
         <div className="mt-8 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-stone-100">
-          <table className="w-full min-w-[480px] text-sm">
+          <table className="w-full min-w-[360px] sm:min-w-[480px] text-sm">
             <tbody>
               {rows.map((row, idx) => (
                 <tr key={row.label} className={idx % 2 === 0 ? "bg-cream-50/40" : ""}>

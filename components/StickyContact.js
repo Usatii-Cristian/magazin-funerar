@@ -180,7 +180,7 @@ export default function StickyContact() {
         <a
           href={telHref}
           aria-label="Telefon"
-          className="flex flex-col items-center justify-center gap-0.5 py-2.5 text-xs font-semibold text-stone-800 active:bg-stone-50"
+          className="flex flex-col items-center justify-center gap-0.5 py-3 text-xs font-semibold text-stone-800 active:bg-stone-50"
         >
           <PhoneIcon className="h-5 w-5 text-gold-500" />
           Telefon
@@ -190,7 +190,7 @@ export default function StickyContact() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="WhatsApp"
-          className="flex flex-col items-center justify-center gap-0.5 bg-[#25D366] py-2.5 text-xs font-semibold text-white active:bg-[#1ebe5c]"
+          className="flex flex-col items-center justify-center gap-0.5 bg-[#25D366] py-3 text-xs font-semibold text-white active:bg-[#1ebe5c]"
         >
           <WhatsAppIcon className="h-5 w-5" />
           WhatsApp
@@ -198,7 +198,7 @@ export default function StickyContact() {
         <a
           href={viberHref}
           aria-label="Viber"
-          className="flex flex-col items-center justify-center gap-0.5 bg-[#7360F2] py-2.5 text-xs font-semibold text-white active:bg-[#5d4dcf]"
+          className="flex flex-col items-center justify-center gap-0.5 bg-[#7360F2] py-3 text-xs font-semibold text-white active:bg-[#5d4dcf]"
         >
           <ViberIcon className="h-5 w-5" />
           Viber

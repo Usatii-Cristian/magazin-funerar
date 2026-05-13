@@ -159,7 +159,7 @@ export default function ImageGallery({ images: rawImages, name, children }) {
     <>
       {/* Hero image */}
       <div
-        className={`relative h-[55vh] min-h-[360px] w-full overflow-hidden lg:max-h-[520px] ${
+        className={`relative h-[55vh] min-h-[260px] sm:min-h-[360px] w-full overflow-hidden lg:max-h-[520px] ${
           hasImages ? "cursor-zoom-in bg-stone-900" : "bg-stone-800"
         }`}
         onClick={() => hasImages && setLightboxIndex(0)}

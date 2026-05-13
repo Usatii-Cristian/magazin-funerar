@@ -84,7 +84,7 @@ export default function ServicesPage() {
 
                 {/* Image panel */}
                 <div
-                  className={`relative min-h-64 overflow-hidden ${i % 2 === 1 ? "md:order-1" : ""}`}
+                  className={`relative min-h-48 sm:min-h-64 overflow-hidden ${i % 2 === 1 ? "md:order-1" : ""}`}
                 >
                   <Image
                     src={s.image}

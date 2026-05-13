@@ -188,7 +188,7 @@ export default async function ProductPage({ params }) {
             {product.category}
           </Link>
           <span>/</span>
-          <span className="max-w-[200px] truncate text-stone-800">{product.name}</span>
+          <span className="max-w-[120px] sm:max-w-[200px] truncate text-stone-800">{product.name}</span>
         </div>
       </nav>
 
