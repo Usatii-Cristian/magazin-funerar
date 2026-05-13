@@ -30,7 +30,7 @@ export default function Navbar() {
             width={48}
             height={48}
             priority
-            className="rounded-sm"
+            className=""
           />
           <span className="font-display text-base font-semibold leading-tight text-white">
             GranitNord<span className="text-gold-400"> Elit CV</span>
