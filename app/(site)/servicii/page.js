@@ -85,24 +85,20 @@ export default function ServicesPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(servicesJsonLd) }} />
-      {/* Page hero */}
-      <section className="bg-stone-900 px-6 py-24 text-center">
-        <div className="mx-auto max-w-2xl">
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-gold-400">
+      {/* Services */}
+      <section className="bg-cream-50 px-6 py-20">
+        <div className="mx-auto mb-12 max-w-2xl text-center">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-gold-500">
             Ce oferim
           </p>
-          <h1 className="font-display text-4xl font-semibold text-white sm:text-5xl">
+          <h1 className="font-display text-4xl font-semibold text-stone-900 sm:text-5xl">
             Servicii Funerare
           </h1>
-          <p className="mt-5 text-base leading-relaxed text-stone-400">
+          <p className="mt-5 text-base leading-relaxed text-stone-500">
             Gestionăm fiecare detaliu cu grijă, astfel încât familia să poată
             fi prezentă în totalitate alături de cei dragi.
           </p>
         </div>
-      </section>
-
-      {/* Services */}
-      <section className="bg-cream-50 px-6 py-20">
         <div className="mx-auto max-w-5xl space-y-8">
           {services.map((s, i) => (
             <div
