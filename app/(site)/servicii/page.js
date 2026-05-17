@@ -99,50 +99,46 @@ export default function ServicesPage() {
             fi prezentă în totalitate alături de cei dragi.
           </p>
         </div>
-        <div className="mx-auto max-w-5xl space-y-8">
+        <div className="mx-auto max-w-5xl grid gap-6 sm:grid-cols-3">
           {services.map((s, i) => (
             <div
               key={s.id}
               className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-stone-100"
             >
-              <div className="grid md:grid-cols-2">
-                {/* Content */}
-                <div className={`p-8 ${i % 2 === 1 ? "md:order-2" : ""}`}>
-                  <span className="text-xs font-semibold uppercase tracking-widest text-gold-500">
-                    Serviciu 0{i + 1}
-                  </span>
-                  <h2 className="mt-2 font-display text-2xl font-semibold text-stone-900">
-                    {s.title}
-                  </h2>
-                  <p className="mt-3 leading-relaxed text-stone-500">
-                    {s.description}
-                  </p>
-                  <ul className="mt-6 space-y-2.5">
-                    {s.includes.map((item) => (
-                      <li
-                        key={item}
-                        className="flex items-start gap-2.5 text-sm text-stone-700"
-                      >
-                        <CheckIcon />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              {/* Image */}
+              <div className="relative aspect-square overflow-hidden">
+                <Image
+                  src={s.image}
+                  alt={s.imageAlt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-stone-900/30" />
+                <span className="absolute left-4 top-4 text-xs font-semibold uppercase tracking-widest text-white/70">
+                  Serviciu 0{i + 1}
+                </span>
+              </div>
 
-                {/* Image panel */}
-                <div
-                  className={`relative min-h-48 sm:min-h-64 overflow-hidden ${i % 2 === 1 ? "md:order-1" : ""}`}
-                >
-                  <Image
-                    src={s.image}
-                    alt={s.imageAlt}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  <div className="absolute inset-0 bg-stone-900/30" />
-                </div>
+              {/* Content */}
+              <div className="p-6">
+                <h2 className="font-display text-xl font-semibold text-stone-900">
+                  {s.title}
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-stone-500">
+                  {s.description}
+                </p>
+                <ul className="mt-4 space-y-2">
+                  {s.includes.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 text-sm text-stone-700"
+                    >
+                      <CheckIcon />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           ))}

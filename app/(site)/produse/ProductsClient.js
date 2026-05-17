@@ -294,7 +294,7 @@ export default function ProductsClient({ products, initialCategory = "Toate" }) 
                         key={p.id}
                         className="group relative overflow-hidden rounded-xl bg-white text-left shadow-sm ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
                       >
-                        <div className="relative h-52 overflow-hidden bg-stone-100">
+                        <div className="relative aspect-square overflow-hidden bg-stone-100">
                           {p.image ? (
                             <Image
                               src={p.image}
