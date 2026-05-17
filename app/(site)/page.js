@@ -7,16 +7,23 @@ import QuickQuote from "@/components/QuickQuote";
 export const revalidate = 60;
 
 export const metadata = {
-  title: { absolute: "GranitNord Elit CV — Servicii Funerare & Monumente din Granit" },
+  title: { absolute: "GranitNord Elit CV — Servicii Funerare & Monumente din Granit | Bălți, Moldova" },
   description:
-    "Servicii funerare complete și monumente funerare din granit și marmură. Peste 15 ani de experiență, disponibili 24/7 în toată Republica Moldova. Comanda online sau sunați 079 175 383.",
+    "Servicii funerare complete în Bălți și toată Moldova. Monumente din granit de la 2.800 lei, gravuri foto, montaj inclus. Disponibili 24/7 — sunați acum: 079 175 383.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "GranitNord Elit CV — Servicii Funerare & Monumente din Granit",
+    title: "GranitNord Elit CV — Servicii Funerare & Monumente din Granit | Bălți",
     description:
-      "Servicii funerare complete și monumente din granit. Peste 15 ani de experiență, disponibili 24/7.",
+      "Servicii funerare complete în Bălți și toată Moldova. Monumente din granit de la 2.800 lei. Disponibili 24/7 — 079 175 383.",
     url: "/",
     type: "website",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "GranitNord Elit CV" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GranitNord Elit CV — Servicii Funerare & Monumente din Granit",
+    description: "Servicii funerare complete în Bălți și toată Moldova. Monumente din granit de la 2.800 lei. Disponibili 24/7.",
+    images: ["/og-image.jpg"],
   },
 };
 

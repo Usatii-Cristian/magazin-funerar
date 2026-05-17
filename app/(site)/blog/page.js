@@ -3,16 +3,24 @@ import Image from "next/image";
 import prisma from "@/lib/prisma";
 
 export const metadata = {
-  title: "Blog — Sfaturi și Tradiții Funerare",
+  title: "Blog Funerar — Sfaturi Monumente, Tradiții și Înmormântare în Moldova",
   description:
-    "Articole despre monumente funerare, alegerea materialelor, organizarea serviciilor de înmormântare și tradiții funerare din Republica Moldova.",
+    "Articole utile: cum alegi un monument funerar, ce granit durează mai mult, tradiții de înmormântare în Moldova, prețuri și sfaturi practice de la experți cu 15+ ani experiență.",
+  keywords: ["blog funerar Moldova", "sfaturi monument funerar", "tradiții înmormântare Moldova", "cum aleg monument granit", "pret monument funerar"],
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "Blog GranitNord Elit CV — Sfaturi și Tradiții Funerare",
+    title: "Blog Funerar GranitNord — Sfaturi Monumente & Tradiții Moldova",
     description:
-      "Articole despre monumente funerare, alegerea materialelor și tradiții funerare din Moldova.",
+      "Articole utile: cum alegi un monument funerar, tradiții de înmormântare în Moldova, prețuri și sfaturi practice.",
     url: "/blog",
     type: "website",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Blog funerar GranitNord Elit CV" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog Funerar GranitNord — Sfaturi & Tradiții Moldova",
+    description: "Cum alegi un monument funerar, tradiții de înmormântare în Moldova, prețuri și sfaturi practice.",
+    images: ["/og-image.jpg"],
   },
 };
 

@@ -4,16 +4,24 @@ import ProductsClient from "./ProductsClient";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Monumente Funerare din Granit și Marmură",
+  title: "Monumente Funerare Granit și Marmură — Prețuri de la 2.800 lei | Moldova",
   description:
-    "Catalog complet de monumente funerare, cruci, sicrie, coroane și accesorii din granit și marmură. Personalizate, gravate și montate profesionist în toată Moldova.",
+    "Catalog monumente funerare din granit și marmură: standart, duble, VIP, cruci, sicrie, coroane. Prețuri de la 2.800 lei, gravuri foto incluse, montaj în toată Moldova.",
+  keywords: ["monumente funerare granit", "monument funerar preț", "cruce granit", "sicrie lemn", "coroane funerare Moldova", "monument funerar la comandă"],
   alternates: { canonical: "/produse" },
   openGraph: {
-    title: "Monumente Funerare din Granit și Marmură | GranitNord Elit CV",
+    title: "Monumente Funerare Granit & Marmură de la 2.800 lei | GranitNord Elit CV",
     description:
-      "Catalog complet de monumente funerare, cruci, sicrie, coroane și accesorii din granit și marmură.",
+      "Catalog complet: monumente granit, cruci, sicrie, coroane. Prețuri de la 2.800 lei, gravuri foto, montaj profesionist în toată Moldova.",
     url: "/produse",
     type: "website",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Monumente funerare GranitNord" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Monumente Funerare Granit & Marmură de la 2.800 lei",
+    description: "Catalog complet: monumente granit, cruci, sicrie, coroane. Prețuri de la 2.800 lei, montaj în toată Moldova.",
+    images: ["/og-image.jpg"],
   },
 };
 

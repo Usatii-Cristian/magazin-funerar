@@ -2,16 +2,24 @@ import { companyInfo } from "@/lib/data";
 import ContactForm from "./ContactForm";
 
 export const metadata = {
-  title: "Contact — Disponibili 24/7",
+  title: "Contact Servicii Funerare Bălți — Sunați 24/7: 079 175 383",
   description:
-    "Contactați GranitNord Elit CV pentru servicii funerare și monumente din granit. Sunați la 079 175 383 — suntem disponibili 24/7 pentru orice nevoie urgentă.",
+    "Contactați GranitNord Elit CV Bălți: 079 175 383, disponibili 24/7. Servicii funerare urgente, monumente granit, transport funerar în toată Moldova. Răspundem imediat.",
+  keywords: ["contact pompe funebre Bălți", "servicii funerare urgente Moldova", "telefon servicii funerare", "079 175 383"],
   alternates: { canonical: "/contact" },
   openGraph: {
-    title: "Contact GranitNord Elit CV — Disponibili 24/7",
+    title: "Contact GranitNord Elit CV Bălți — Disponibili 24/7: 079 175 383",
     description:
-      "Sunați la 079 175 383 — suntem disponibili 24/7 pentru orice nevoie urgentă.",
+      "Sunați acum: 079 175 383 — disponibili 24/7 pentru servicii funerare urgente în Bălți și toată Moldova.",
     url: "/contact",
     type: "website",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Contact GranitNord Elit CV" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact GranitNord Elit CV — 24/7: 079 175 383",
+    description: "Servicii funerare urgente în Bălți și Moldova. Sunați: 079 175 383.",
+    images: ["/og-image.jpg"],
   },
 };
 

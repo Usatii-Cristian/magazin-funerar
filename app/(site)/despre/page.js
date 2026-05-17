@@ -2,16 +2,24 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Despre noi — Peste 15 Ani de Experiență",
+  title: "Despre GranitNord Elit CV — 15+ Ani de Servicii Funerare în Bălți",
   description:
-    "GranitNord Elit CV — peste 15 ani de experiență în servicii funerare și monumente din granit. Valorile, misiunea și echipa noastră dedicată familiei dumneavoastră.",
+    "GranitNord Elit CV — peste 15 ani de experiență în servicii funerare și monumente din granit în Bălți, Moldova. Echipă dedicată, disponibilă 24/7, cu sute de familii ajutate.",
+  keywords: ["GranitNord Elit CV", "pompe funebre Bălți", "servicii funerare Moldova experiență", "monument granit Bălți"],
   alternates: { canonical: "/despre" },
   openGraph: {
-    title: "Despre GranitNord Elit CV — Peste 15 Ani de Experiență",
+    title: "Despre GranitNord Elit CV — 15+ Ani de Servicii Funerare în Bălți",
     description:
-      "Peste 15 ani de experiență în servicii funerare și monumente din granit.",
+      "Peste 15 ani de experiență în servicii funerare și monumente din granit în Bălți, Moldova. Disponibili 24/7, sute de familii ajutate.",
     url: "/despre",
     type: "website",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "GranitNord Elit CV — Bălți" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Despre GranitNord Elit CV — 15+ Ani de Servicii Funerare",
+    description: "Peste 15 ani de experiență în servicii funerare și monumente din granit în Bălți, Moldova.",
+    images: ["/og-image.jpg"],
   },
 };
 

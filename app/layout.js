@@ -38,20 +38,31 @@ export const metadata = {
   publisher: SITE_NAME,
   generator: "Next.js",
   keywords: [
-    "servicii funerare",
-    "monumente funerare",
-    "granit",
-    "marmură",
-    "cruci funerare",
-    "sicrie",
-    "coroane",
+    "servicii funerare Bălți",
+    "servicii funerare Moldova",
+    "pompe funebre Bălți",
+    "pompe funebre Moldova",
+    "monumente funerare granit",
+    "monumente funerare marmură",
+    "monument funerar la comandă",
+    "monument funerar preț",
+    "granit negru monument",
+    "cruce granit personalizată",
+    "sicrie lemn masiv",
+    "coroane funerare",
+    "transport funerar Moldova",
+    "organizare înmormântare",
+    "asistență acte deces",
+    "cimitir Bălți",
     "GranitNord Elit CV",
-    "Bălți",
-    "Moldova",
-    "înmormântare",
-    "monument granit",
-    "cimitir",
-    "pompe funebre",
+    "înmormântare Moldova",
+    "gravură monument granit",
+    "monument funerar ieftin",
+    "monument funerar dublu",
+    "accesorii mormânt",
+    "gard mormânt granit",
+    "fundație mormânt",
+    "fotografie porțelan monument",
   ],
   category: "funeral services",
   alternates: {
@@ -138,11 +149,20 @@ const organizationJsonLd = {
     addressCountry: ORG_COUNTRY,
     addressLocality: "Bălți",
     addressRegion: "Bălți",
+    postalCode: "3100",
   },
-  areaServed: {
-    "@type": "Country",
-    name: "Republica Moldova",
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: "47.7617",
+    longitude: "27.9289",
   },
+  areaServed: [
+    { "@type": "City", name: "Bălți" },
+    { "@type": "Country", name: "Republica Moldova" },
+  ],
+  hasMap: "https://maps.google.com/?q=Bălți,Moldova",
+  currenciesAccepted: "MDL",
+  paymentAccepted: "Cash, Card bancar",
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
@@ -161,6 +181,61 @@ const organizationJsonLd = {
   ],
   priceRange: "$$",
   sameAs: [],
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Cât costă un monument funerar din granit?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Prețurile pentru monumente funerare din granit încep de la 2.800 lei și variază în funcție de dimensiuni, tip de granit și gravuri. Oferim consultanță gratuită și ofertă personalizată. Contactați-ne la 079 175 383.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Cât durează execuția unui monument funerar?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Termenul standard de execuție este 30–60 de zile de la confirmarea comenzii, în funcție de complexitatea lucrării. Includem gravura, montajul și toate finisajele.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Oferiți servicii funerare disponibile 24/7?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Da, suntem disponibili 24 de ore din 24, 7 zile din 7. Puteți suna oricând la 079 175 383 pentru asistență urgentă.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Livrați și montați monumente în toată Moldova?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Da, oferim servicii de livrare și montaj profesionist în toată Republica Moldova. Echipa noastră se deplasează la locul indicat.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Puteți grava o fotografie pe monument?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Da, gravăm fotografii pe granit sau ceramică (porțelan) direct pe monument. Fotografia trebuie să fie în format digital la rezoluție bună. Gravura rezistă zeci de ani la intemperii.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Ce garanție oferă GranitNord Elit CV?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Oferim garanție pentru toate lucrările executate. Folosim granit și marmură de calitate superioară, iar montajul este realizat de echipe specializate cu experiență de peste 15 ani.",
+      },
+    },
+  ],
 };
 
 const websiteJsonLd = {
@@ -186,6 +261,10 @@ export default function RootLayout({ children }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
         />
         <Analytics />
         <SpeedInsights />

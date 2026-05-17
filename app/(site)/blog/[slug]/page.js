@@ -63,6 +63,8 @@ export default async function BlogPostPage({ params }) {
     publisher: { "@id": `${SITE_URL}/#organization` },
     mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
     inLanguage: "ro-RO",
+    keywords: ["servicii funerare", "monumente funerare", "granit Moldova", SITE_NAME].join(", "),
+    about: { "@type": "Thing", name: "Servicii funerare și monumente funerare în Moldova" },
   };
 
   const breadcrumbJsonLd = {

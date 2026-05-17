@@ -46,23 +46,27 @@ export async function generateMetadata({ params }) {
   if (!product) return { title: "Produs negăsit" };
   const slug = product.slug || product.id;
   const url = `/produse/${slug}`;
-  const desc = (product.description || "").slice(0, 160);
+  const desc = (product.description || "").slice(0, 155);
+  const priceStr = product.price ? ` — ${product.price.toLocaleString("ro-RO")} lei` : "";
+  const fullDesc = desc || `${product.name} din ${product.material}${priceStr}. Gravură personalizată, montaj profesionist în toată Moldova.`;
+  const image = product.images?.[0] || product.image;
   return {
-    title: product.name,
-    description: desc || `${product.name} — ${product.material}, ${product.category}.`,
+    title: `${product.name} — ${product.material} | Preț${priceStr}`,
+    description: fullDesc,
+    keywords: [product.name, product.category, product.material, "monument funerar Moldova", "GranitNord Elit CV"],
     alternates: { canonical: url },
     openGraph: {
-      title: `${product.name} | ${SITE_NAME}`,
-      description: desc,
+      title: `${product.name} — ${product.material}${priceStr} | GranitNord Elit CV`,
+      description: fullDesc,
       url,
       type: "website",
-      images: product.image ? [{ url: product.image, alt: product.name }] : undefined,
+      images: image ? [{ url: image, width: 800, height: 800, alt: product.name }] : [{ url: "/og-image.jpg", width: 1200, height: 630, alt: product.name }],
     },
     twitter: {
       card: "summary_large_image",
-      title: product.name,
-      description: desc,
-      images: product.image ? [product.image] : undefined,
+      title: `${product.name}${priceStr}`,
+      description: fullDesc,
+      images: image ? [image] : ["/og-image.jpg"],
     },
   };
 }
@@ -99,14 +103,22 @@ export default async function ProductPage({ params }) {
     category: product.category,
     material: product.material,
     brand: { "@type": "Brand", name: SITE_NAME },
+    keywords: [product.category, product.material, "monument funerar", "GranitNord Elit CV", "Moldova"].join(", "),
     offers: {
       "@type": "Offer",
       url: productUrl,
       priceCurrency: "MDL",
       price: product.price,
+      priceValidUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
-      seller: { "@type": "Organization", name: SITE_NAME },
+      areaServed: { "@type": "Country", name: "Republica Moldova" },
+      seller: {
+        "@type": "Organization",
+        name: SITE_NAME,
+        url: SITE_URL,
+        telephone: ORG_PHONE,
+      },
     },
   };
 

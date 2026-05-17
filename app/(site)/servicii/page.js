@@ -1,18 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { services, companyInfo } from "@/lib/data";
+import { safeJsonLd } from "@/lib/jsonLd";
+import { SITE_URL, SITE_NAME, ORG_PHONE } from "@/lib/site";
 
 export const metadata = {
-  title: "Servicii Funerare Complete",
+  title: "Servicii Funerare Complete Bălți — Organizare, Transport, Monumente",
   description:
-    "Servicii funerare complete: organizare ceremonie, transport funerar, monumente din granit și marmură, asistență acte. Disponibili 24/7 în toată Moldova.",
+    "Servicii funerare complete în Bălți și Moldova: organizare ceremonie, transport funerar local, monumente granit și marmură, disponibili 24/7. Sunați acum: 079 175 383.",
+  keywords: ["servicii funerare Bălți", "pompe funebre Moldova", "organizare înmormântare", "transport funerar", "monumente granit"],
   alternates: { canonical: "/servicii" },
   openGraph: {
-    title: "Servicii Funerare Complete | GranitNord Elit CV",
+    title: "Servicii Funerare Complete Bălți | GranitNord Elit CV — 24/7",
     description:
-      "Servicii funerare complete: organizare ceremonie, transport funerar, monumente din granit și marmură, asistență acte.",
+      "Organizare ceremonie, transport funerar local, monumente granit și marmură în Bălți și toată Moldova. Disponibili 24/7 la 079 175 383.",
     url: "/servicii",
     type: "website",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Servicii funerare GranitNord Elit CV" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Servicii Funerare Complete Bălți | GranitNord Elit CV",
+    description: "Organizare ceremonie, transport funerar, monumente granit în Bălți și Moldova. 24/7.",
+    images: ["/og-image.jpg"],
   },
 };
 
@@ -30,9 +40,51 @@ function CheckIcon() {
   );
 }
 
+const servicesJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Servicii Funerare GranitNord Elit CV",
+  itemListElement: [
+    {
+      "@type": "ListItem", position: 1,
+      item: {
+        "@type": "Service",
+        name: "Organizare Funerară",
+        description: "Suport complet în organizarea ceremoniei funerare: consiliere 24/7, aranjamente florale, coordonare religioasă.",
+        provider: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, telephone: ORG_PHONE },
+        areaServed: { "@type": "Country", name: "Republica Moldova" },
+        url: `${SITE_URL}/servicii`,
+      },
+    },
+    {
+      "@type": "ListItem", position: 2,
+      item: {
+        "@type": "Service",
+        name: "Transport Funerar Local",
+        description: "Transport funerar cu vehicule specializate moderne, echipă profesionistă, disponibilitate 24/7.",
+        provider: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, telephone: ORG_PHONE },
+        areaServed: { "@type": "City", name: "Bălți" },
+        url: `${SITE_URL}/servicii`,
+      },
+    },
+    {
+      "@type": "ListItem", position: 3,
+      item: {
+        "@type": "Service",
+        name: "Monumente și Cruci Funerare",
+        description: "Confecționăm și montăm monumente funerare din granit și marmură, personalizate cu gravuri și inscripții.",
+        provider: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, telephone: ORG_PHONE },
+        areaServed: { "@type": "Country", name: "Republica Moldova" },
+        url: `${SITE_URL}/produse`,
+      },
+    },
+  ],
+};
+
 export default function ServicesPage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(servicesJsonLd) }} />
       {/* Page hero */}
       <section className="bg-stone-900 px-6 py-24 text-center">
         <div className="mx-auto max-w-2xl">
