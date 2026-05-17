@@ -2,23 +2,23 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Despre GranitNord Elit CV — 15+ Ani de Servicii Funerare în Bălți",
+  title: "Despre GranitNord Elit CV — 15+ Ani de Servicii Funerare în Soroca",
   description:
-    "GranitNord Elit CV — peste 15 ani de experiență în servicii funerare și monumente din granit în Bălți, Moldova. Echipă dedicată, disponibilă 24/7, cu sute de familii ajutate.",
-  keywords: ["GranitNord Elit CV", "pompe funebre Bălți", "servicii funerare Moldova experiență", "monument granit Bălți"],
+    "GranitNord Elit CV — peste 15 ani de experiență în servicii funerare și monumente din granit în Soroca, Moldova. Echipă dedicată, disponibilă 24/7, cu sute de familii ajutate.",
+  keywords: ["GranitNord Elit CV", "pompe funebre Soroca", "servicii funerare Moldova experiență", "monument granit Soroca"],
   alternates: { canonical: "/despre" },
   openGraph: {
-    title: "Despre GranitNord Elit CV — 15+ Ani de Servicii Funerare în Bălți",
+    title: "Despre GranitNord Elit CV — 15+ Ani de Servicii Funerare în Soroca",
     description:
-      "Peste 15 ani de experiență în servicii funerare și monumente din granit în Bălți, Moldova. Disponibili 24/7, sute de familii ajutate.",
+      "Peste 15 ani de experiență în servicii funerare și monumente din granit în Soroca, Moldova. Disponibili 24/7, sute de familii ajutate.",
     url: "/despre",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "GranitNord Elit CV — Bălți" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "GranitNord Elit CV — Soroca" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Despre GranitNord Elit CV — 15+ Ani de Servicii Funerare",
-    description: "Peste 15 ani de experiență în servicii funerare și monumente din granit în Bălți, Moldova.",
+    description: "Peste 15 ani de experiență în servicii funerare și monumente din granit în Soroca, Moldova.",
     images: ["/og-image.jpg"],
   },
 };

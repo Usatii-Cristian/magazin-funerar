@@ -5,23 +5,23 @@ import { safeJsonLd } from "@/lib/jsonLd";
 import { SITE_URL, SITE_NAME, ORG_PHONE } from "@/lib/site";
 
 export const metadata = {
-  title: "Servicii Funerare Complete Bălți — Organizare, Transport, Monumente",
+  title: "Servicii Funerare Complete Soroca — Organizare, Transport, Monumente",
   description:
-    "Servicii funerare complete în Bălți și Moldova: organizare ceremonie, transport funerar local, monumente granit și marmură, disponibili 24/7. Sunați acum: 079 175 383.",
-  keywords: ["servicii funerare Bălți", "pompe funebre Moldova", "organizare înmormântare", "transport funerar", "monumente granit"],
+    "Servicii funerare complete în Soroca și Moldova: organizare ceremonie, transport funerar local, monumente granit și marmură, disponibili 24/7. Sunați acum: 079 175 383.",
+  keywords: ["servicii funerare Soroca", "pompe funebre Moldova", "organizare înmormântare", "transport funerar", "monumente granit"],
   alternates: { canonical: "/servicii" },
   openGraph: {
-    title: "Servicii Funerare Complete Bălți | GranitNord Elit CV — 24/7",
+    title: "Servicii Funerare Complete Soroca | GranitNord Elit CV — 24/7",
     description:
-      "Organizare ceremonie, transport funerar local, monumente granit și marmură în Bălți și toată Moldova. Disponibili 24/7 la 079 175 383.",
+      "Organizare ceremonie, transport funerar local, monumente granit și marmură în Soroca și toată Moldova. Disponibili 24/7 la 079 175 383.",
     url: "/servicii",
     type: "website",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Servicii funerare GranitNord Elit CV" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Servicii Funerare Complete Bălți | GranitNord Elit CV",
-    description: "Organizare ceremonie, transport funerar, monumente granit în Bălți și Moldova. 24/7.",
+    title: "Servicii Funerare Complete Soroca | GranitNord Elit CV",
+    description: "Organizare ceremonie, transport funerar, monumente granit în Soroca și Moldova. 24/7.",
     images: ["/og-image.jpg"],
   },
 };
@@ -63,7 +63,7 @@ const servicesJsonLd = {
         name: "Transport Funerar Local",
         description: "Transport funerar cu vehicule specializate moderne, echipă profesionistă, disponibilitate 24/7.",
         provider: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, telephone: ORG_PHONE },
-        areaServed: { "@type": "City", name: "Bălți" },
+        areaServed: { "@type": "City", name: "Soroca" },
         url: `${SITE_URL}/servicii`,
       },
     },
