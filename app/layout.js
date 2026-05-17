@@ -66,7 +66,7 @@ export const metadata = {
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: "/opengraph-image",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: SITE_NAME,
@@ -77,7 +77,7 @@ export const metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} — Servicii Funerare`,
     description: SITE_DESCRIPTION,
-    images: ["/opengraph-image"],
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
@@ -97,9 +97,19 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    other: [
+      { rel: "mask-icon", url: "/favicon-48x48.png" },
+      { rel: "msapplication-TileImage", url: "/mstile-150x150.png" },
+      { rel: "manifest", url: "/site.webmanifest" },
+    ],
   },
 };
 
