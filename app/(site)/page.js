@@ -178,7 +178,7 @@ export default async function HomePage() {
                 href={`/produse?categoria=${encodeURIComponent(cat.name)}`}
                 className="group relative overflow-hidden rounded-xl shadow-sm ring-1 ring-stone-200 transition-shadow hover:shadow-lg"
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden">
+                <div className="relative aspect-square w-full overflow-hidden">
                   <Image
                     src={cat.image}
                     alt={cat.name}
