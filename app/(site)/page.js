@@ -231,7 +231,7 @@ export default async function HomePage() {
               Servicii Complete
             </h2>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-3">
             {services.map((s) => (
               <div
                 key={s.id}
@@ -285,7 +285,7 @@ export default async function HomePage() {
                   href={`/produse/${p.slug || p.id}`}
                   className="group overflow-hidden rounded-xl bg-white ring-1 ring-stone-100 transition-shadow hover:shadow-lg"
                 >
-                  <div className="relative h-52 overflow-hidden bg-stone-100">
+                  <div className="relative aspect-square overflow-hidden bg-stone-100">
                     {p.image ? (
                       <Image
                         src={p.image}
