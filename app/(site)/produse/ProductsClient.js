@@ -111,7 +111,7 @@ const SORT_OPTIONS = [
 ];
 
 export default function ProductsClient({ products, initialCategory = "Toate" }) {
-  const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const [activeCategory, setActiveCategory] = useState("Toate");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
